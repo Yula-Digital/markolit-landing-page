@@ -1,0 +1,24 @@
+.vercel
+
+# Dev tools
+__mobile_tuner.html
+__mobile_preview.html
+
+# Other projects
+SHLISHUK/
+skilles/
+main_landing_page/
+
+# Test artifacts
+playwright-*.png
+pw-*.png
+pw-*.jpg
+
+# Large unused (replaced by *_final.png)
+assets/deals-grid-v2.png
+assets/fresh-basket-v2.png
+assets/jobs-team-v2.png
+
+# OS
+Thumbs.db
+.DS_Store
