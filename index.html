@@ -35,50 +35,10 @@
     body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay) {
       display: none !important;
     }
-    /* Desktop AND mobile use CSS navbar (replaces SVG-baked nav strip) */
-    /* Logo: hide text spans always — show image only via ::before */
-    .logo-badge .logo-name,
-    .logo-badge .logo-sub,
-    .logo-badge .logo-tractor { display: none !important; }
-    .logo-badge {
-      background: transparent !important;
-      box-shadow: none !important;
-      width: 96px !important;
-      height: 60px !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      flex-shrink: 0 !important;
-      overflow: visible !important;
-      position: relative !important;
-    }
-    .logo-badge::before {
-      content: '';
-      display: block;
-      width: 96px;
-      height: 60px;
-      background: url('assets/images/trans_logo_marcolit.png') center/contain no-repeat;
-    }
-    /* Social icons in navbar — visible on BOTH desktop + mobile */
-    .navbar-socials {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .navbar-social {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 26px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-    .navbar-social svg { width: 100%; height: 100%; display: block; }
-    /* Hide SVG-baked nav strip — replaced with CSS navbar */
-    .slice-top-bar { display: none !important; }
-    /* Hide hit-main-nav (SVG hit areas no longer needed) */
-    .hit-main-nav { display: none !important; }
-    /* Mask the base-art PNG nav strip portion (top 17.6% of slice 1) on ALL viewports — CSS navbar replaces */
+    /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
+    .navbar { display: none !important; }
+    .navbar-socials { display: none; }
+    /* Mask the base-art PNG nav strip portion only — replaced by main-menu-strip-v2.svg layered on top */
     .svg-slice[data-y="0"]::after {
       content: '';
       position: absolute;
@@ -104,6 +64,9 @@
       --deals-figure-scale: 0.85;
       width: var(--stage);
       background: #f7f3ea;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
     }
     @media (min-width: 721px) {
       .svg-stage {
@@ -152,14 +115,58 @@
       padding: 0;
     }
 
-    .main-menu-strip img {
+    .main-menu-strip img,
+    .main-menu-svg {
       display: block;
       width: 100%;
       height: 100%;
+      pointer-events: auto;
+      user-select: none;
+    }
+    /* Strip logo overlay — applied from tuner export */
+    .strip-logo {
+      position: absolute;
+      top: 50%;
+      right: 0%;
+      transform: translateY(-50%);
+      width: 29.5%;
+      height: auto;
+      max-height: 220%;
       object-fit: contain;
       object-position: center center;
       pointer-events: none;
       user-select: none;
+      z-index: 2;
+    }
+    /* Allow logo + nav to overflow slice without clipping */
+    .slice-top-bar { overflow: visible !important; }
+    .svg-slice[data-y="0"] { overflow: visible !important; }
+    /* Inline SVG nav — interactive items with hover/active rectangle highlight on TEXT only */
+    .main-menu-svg .nav-item {
+      cursor: pointer;
+      pointer-events: bounding-box;
+    }
+    .main-menu-svg .nav-hit {
+      pointer-events: all;
+      fill: transparent;
+    }
+    .main-menu-svg .nav-text {
+      font-family: 'Heebo', 'Arial', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      fill: #1A6147;
+      pointer-events: none;
+    }
+    .main-menu-svg .nav-icon { pointer-events: none; }
+    .main-menu-svg .nav-highlight {
+      fill: #DBE7D6;
+      opacity: 0;
+      transition: opacity 0.18s;
+      pointer-events: none;
+    }
+    .main-menu-svg .nav-item:hover .nav-highlight,
+    .main-menu-svg .nav-active .nav-highlight {
+      opacity: 1;
     }
 
     /* כותרת הירו: תמונת טקסט מהעיצוב (במקום הכיתוב המקורי ב־PNG) */
@@ -379,7 +386,6 @@
       right: 1%;
       bottom: 5%;
       background: rgba(0, 0, 0, 0.03);
-      border: 1px solid rgba(200, 198, 192, 0.5);
       border-radius: 14px;
       display: flex;
       flex-direction: column;
@@ -520,12 +526,8 @@
        NAVBAR
     ══════════════════════════════════ */
     .navbar {
-      position: fixed;
+      position: sticky;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(100vw, 720px);
-      max-width: 720px;
       z-index: 300;
       background: var(--cream);
       display: flex;
@@ -533,10 +535,7 @@
       justify-content: space-between;
       padding: 8px 18px;
       gap: 12px;
-      box-shadow: 0 1px 0 rgba(200,198,192,0.4);
-      border-radius: 0 0 12px 12px;
     }
-    body { padding-top: 64px; }
 
     /* Hamburger (mobile-only) */
     .hamburger {
@@ -566,17 +565,11 @@
       display: flex;
       align-items: center;
       list-style: none;
-      gap: 0;
+      gap: 18px;
       flex-wrap: nowrap;
     }
     .nav-links li { display: flex; align-items: center; }
-    .nav-links li + li::before {
-      content: '•';
-      color: var(--green);
-      margin: 0 2px;
-      font-size: 0.65rem;
-      line-height: 1;
-    }
+    /* Dots between nav items removed per request */
     .nav-links a {
       color: var(--green);
       font-size: 0.92rem;
@@ -1358,11 +1351,76 @@
       <img class="benefits-strip-svg" src="assets/markolit-icones-strip.svg" alt="" decoding="async" aria-hidden="true" />
       <div class="benefits-seps" aria-hidden="true"></div>
 
-      <div class="slice-top-bar" role="navigation" aria-label="ניווט עליון ולוגו">
-        <picture class="main-menu-strip">
-          <source srcset="assets/main-menu-strip.svg" type="image/svg+xml" />
-          <img src="assets/main_menue_new.png" alt="מרכולית — תפריט עליון ולוגו" width="2000" height="800" decoding="async" />
-        </picture>
+      <div class="slice-top-bar" role="navigation" aria-label="ניווט עליון">
+        <svg class="main-menu-svg" viewBox="0 0 1224 194" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="1224" height="194" fill="#FCF9F6"/>
+
+          <!-- בית (active) — items via tuner: itemGap=166, groupX=220 -->
+          <a href="#home" class="nav-item nav-active">
+            <rect class="nav-hit" x="760" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-30" y="100" width="60" height="32" rx="6" transform="translate(830, 0)"/>
+            <g transform="translate(830, 0)">
+              <g transform="translate(0, 60)">
+                <path class="nav-icon" d="M-12,4 L0,-8 L12,4 L12,14 L-12,14 Z" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <rect x="-4" y="6" width="8" height="8" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">בית</text>
+            </g>
+          </a>
+
+          <!-- סניפים -->
+          <a href="#branches" class="nav-item">
+            <rect class="nav-hit" x="594" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-44" y="100" width="88" height="32" rx="6" transform="translate(664, 0)"/>
+            <g transform="translate(664, 0)">
+              <g transform="translate(0, 60)">
+                <path class="nav-icon" d="M0,-10 C-7,-10 -12,-5 -12,2 C-12,9 0,18 0,18 C0,18 12,9 12,2 C12,-5 7,-10 0,-10 Z" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <circle cx="0" cy="2" r="3.5" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">סניפים</text>
+            </g>
+          </a>
+
+          <!-- אודותינו -->
+          <a href="#about" class="nav-item">
+            <rect class="nav-hit" x="428" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-50" y="100" width="100" height="32" rx="6" transform="translate(498, 0)"/>
+            <g transform="translate(498, 0)">
+              <g transform="translate(0, 60)">
+                <path class="nav-icon" d="M-10,10 C-12,-2 -4,-12 10,-10 C12,4 4,12 -10,10 Z" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <path d="M-10,10 L8,-8" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">אודותינו</text>
+            </g>
+          </a>
+
+          <!-- דרושים -->
+          <a href="#jobs" class="nav-item">
+            <rect class="nav-hit" x="262" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-44" y="100" width="88" height="32" rx="6" transform="translate(332, 0)"/>
+            <g transform="translate(332, 0)">
+              <g transform="translate(0, 60)">
+                <rect x="-12" y="-3" width="24" height="16" rx="2" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <path d="M-6,-3 L-6,-8 L6,-8 L6,-3" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <line x1="-12" y1="4" x2="12" y2="4" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">דרושים</text>
+            </g>
+          </a>
+
+          <!-- מועדון הטבות -->
+          <a href="https://lp6.me/w0plE" target="_blank" rel="noopener" class="nav-item">
+            <rect class="nav-hit" x="-30" y="35" width="160" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-72" y="100" width="144" height="32" rx="6" transform="translate(50, 0)"/>
+            <g transform="translate(50, 0)">
+              <g transform="translate(0, 60)">
+                <polygon points="0,-12 3.5,-3.5 12,-3.5 5,2.5 7.5,11 0,6 -7.5,11 -5,2.5 -12,-3.5 -3.5,-3.5" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">מועדון הטבות</text>
+            </g>
+          </a>
+        </svg>
+        <img class="strip-logo" src="assets/images/trans_logo_marcolit.png" alt="מרכולית" />
       </div>
 
       <div class="hero-headline-wrap">

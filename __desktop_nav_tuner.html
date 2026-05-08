@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head>
+<meta charset="utf-8"><title>🖥 Desktop Nav Tuner — מרכולית</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:Heebo,Arial,sans-serif;background:#1a1a1a;color:#eee;display:grid;grid-template-columns:1fr 460px;height:100vh;overflow:hidden}
+  .preview-pane{padding:14px;overflow:auto;background:#202020;display:flex;flex-direction:column;align-items:center}
+  .frame{background:#000;border-radius:10px;padding:6px;width:100%;max-width:1200px}
+  .frame h4{margin:2px 6px 8px;color:#9cf;font-size:12px;text-align:center}
+  iframe{display:block;border:0;background:#fff;border-radius:4px;width:100%;height:90vh}
+  .controls{background:#161616;border-left:1px solid #333;padding:14px;overflow-y:auto;font-size:13px}
+  .controls h2{margin:0 0 8px;font-size:15px;color:#9cf;font-weight:600}
+  .row{display:grid;grid-template-columns:1fr 80px 26px;gap:5px;align-items:center;margin:4px 0}
+  .row label{font-size:11px;color:#bbb;line-height:1.2}
+  .row input[type=range]{width:100%}
+  .row input[type=number],.row input[type=text],.row select{width:100%;background:#222;color:#eee;border:1px solid #444;padding:3px 5px;border-radius:3px;font:11px monospace}
+  .row .reset{background:#444;border:0;color:#aaa;width:24px;height:22px;border-radius:3px;cursor:pointer;font-size:12px}
+  .row .reset:hover{background:#666;color:#fff}
+  .row.color input[type=color]{width:80px;height:24px;padding:0;border:1px solid #444;background:#222}
+  .btn{background:#2a2a2a;color:#eee;border:1px solid #444;padding:6px 10px;border-radius:4px;cursor:pointer;font:13px Heebo}
+  .btn-primary{background:#1A6147;border-color:#1A6147;font-weight:600}
+  .btn-primary:hover{background:#2A7A57}
+  .toolbar{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
+  .stat{font-size:11px;color:#888;margin:6px 0}
+  .diff-box{background:#0d0d0d;border:1px solid #333;border-radius:4px;padding:10px;font:11px monospace;color:#9f9;margin-top:8px;max-height:280px;overflow:auto;white-space:pre-wrap;line-height:1.5}
+  .group{background:#1f1f1f;border-radius:6px;padding:8px 10px;margin-bottom:8px}
+  .group summary{cursor:pointer;font-weight:600;color:#fc6;padding:3px;outline:none;font-size:12px}
+  .group[open] summary{margin-bottom:6px;border-bottom:1px solid #333}
+</style></head>
+<body>
+
+<div class="preview-pane">
+  <div class="frame"><h4 id="lbl">Desktop 1280×720 (responsive)</h4><iframe id="if" width="1200" height="700"></iframe></div>
+  <script>document.getElementById('if').src='index.html?ts='+Date.now();</script>
+</div>
+
+<div class="controls">
+  <h2>🖥 Desktop Nav Tuner</h2>
+  <div class="toolbar">
+    <button class="btn" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-primary" onclick="exportDiff()">📋 Export</button>
+    <button class="btn" onclick="clearState()" style="background:#600;border-color:#900;font-size:11px">🗑 Clear</button>
+    <button class="btn" onclick="reloadFrame()">🔄 Reload</button>
+  </div>
+  <div class="stat" id="stat">0 changes</div>
+
+  <details class="group" open>
+    <summary>🏷 Logo</summary>
+    <div class="row"><label>logo width % of strip</label><input type="range" id="logoW" min="10" max="60" step="0.5" value="45" oninput="upd('logoW',this.value)"><button class="reset" onclick="rst('logoW',45)">↺</button></div>
+    <div class="row"><label>logo right offset % (שלילי = החוצה ימינה)</label><input type="range" id="logoR" min="-30" max="30" step="0.5" value="0" oninput="upd('logoR',this.value)"><button class="reset" onclick="rst('logoR',0)">↺</button></div>
+    <div class="row"><label>logo top offset %</label><input type="range" id="logoT" min="-20" max="50" step="1" value="50" oninput="upd('logoT',this.value)"><button class="reset" onclick="rst('logoT',50)">↺</button></div>
+    <div class="row"><label>logo max-height %</label><input type="range" id="logoMaxH" min="80" max="400" step="5" value="220" oninput="upd('logoMaxH',this.value)"><button class="reset" onclick="rst('logoMaxH',220)">↺</button></div>
+  </details>
+
+  <details class="group" open>
+    <summary>📐 Menu Items — מיקום X (SVG units 0-1224)</summary>
+    <div class="row"><label>בית X</label><input type="range" id="x_home" min="0" max="1100" step="2" value="610" oninput="upd('x_home',this.value)"><button class="reset" onclick="rst('x_home',610)">↺</button></div>
+    <div class="row"><label>סניפים X</label><input type="range" id="x_branches" min="0" max="1100" step="2" value="470" oninput="upd('x_branches',this.value)"><button class="reset" onclick="rst('x_branches',470)">↺</button></div>
+    <div class="row"><label>אודותינו X</label><input type="range" id="x_about" min="0" max="1100" step="2" value="330" oninput="upd('x_about',this.value)"><button class="reset" onclick="rst('x_about',330)">↺</button></div>
+    <div class="row"><label>דרושים X</label><input type="range" id="x_jobs" min="0" max="1100" step="2" value="190" oninput="upd('x_jobs',this.value)"><button class="reset" onclick="rst('x_jobs',190)">↺</button></div>
+    <div class="row"><label>מועדון הטבות X</label><input type="range" id="x_club" min="0" max="1100" step="2" value="50" oninput="upd('x_club',this.value)"><button class="reset" onclick="rst('x_club',50)">↺</button></div>
+    <div class="row"><label>↪ או auto-distribute (0=off)</label><input type="range" id="auto" min="0" max="1" step="1" value="0" oninput="upd('auto',this.value)"><button class="reset" onclick="rst('auto',0)">↺</button></div>
+    <div class="row"><label>uniform GAP between items (SVG units)</label><input type="range" id="itemGap" min="60" max="280" step="2" value="140" oninput="upd('itemGap',this.value)"><button class="reset" onclick="rst('itemGap',140)">↺</button></div>
+    <div class="row"><label>group offset X (זוז כולם יחד)</label><input type="range" id="groupX" min="-300" max="600" step="2" value="0" oninput="upd('groupX',this.value)"><button class="reset" onclick="rst('groupX',0)">↺</button></div>
+    <div class="row"><label>group mode</label><select id="groupMode" onchange="upd('groupMode',this.value)"><option value="off" selected>off — sliders ידניים</option><option value="on">on — uniform gap + group offset</option></select><button class="reset" onclick="rst('groupMode','off')">↺</button></div>
+  </details>
+
+  <details class="group" open>
+    <summary>🔤 טקסט + אייקון</summary>
+    <div class="row"><label>text font-size (px)</label><input type="range" id="ftSize" min="10" max="40" step="1" value="22" oninput="upd('ftSize',this.value)"><button class="reset" onclick="rst('ftSize',22)">↺</button></div>
+    <div class="row"><label>text font-weight</label><select id="ftWeight" onchange="upd('ftWeight',this.value)"><option value="400">400</option><option value="500">500</option><option value="600">600</option><option value="700" selected>700</option><option value="800">800</option><option value="900">900</option></select><button class="reset" onclick="rst('ftWeight','700')">↺</button></div>
+    <div class="row color"><label>text color</label><input type="color" id="ftColor" value="#1a6147" oninput="upd('ftColor',this.value)"><button class="reset" onclick="rst('ftColor','#1a6147')">↺</button></div>
+    <div class="row"><label>icon stroke-width</label><input type="range" id="iconSW" min="0.5" max="5" step="0.1" value="2" oninput="upd('iconSW',this.value)"><button class="reset" onclick="rst('iconSW',2)">↺</button></div>
+    <div class="row"><label>icon Y offset (px)</label><input type="range" id="iconY" min="20" max="100" step="1" value="60" oninput="upd('iconY',this.value)"><button class="reset" onclick="rst('iconY',60)">↺</button></div>
+    <div class="row"><label>text Y offset (px)</label><input type="range" id="textY" min="80" max="180" step="1" value="123" oninput="upd('textY',this.value)"><button class="reset" onclick="rst('textY',123)">↺</button></div>
+  </details>
+
+  <details class="group" open>
+    <summary>🎯 Highlight (active/hover)</summary>
+    <div class="row"><label>active item</label><select id="activeItem" onchange="upd('activeItem',this.value)"><option value="home" selected>בית</option><option value="branches">סניפים</option><option value="about">אודותינו</option><option value="jobs">דרושים</option><option value="club">מועדון הטבות</option><option value="">none</option></select><button class="reset" onclick="rst('activeItem','home')">↺</button></div>
+    <div class="row"><label>highlight Y (px)</label><input type="range" id="hlY" min="80" max="160" step="1" value="100" oninput="upd('hlY',this.value)"><button class="reset" onclick="rst('hlY',100)">↺</button></div>
+    <div class="row"><label>highlight height (px)</label><input type="range" id="hlH" min="20" max="50" step="1" value="32" oninput="upd('hlH',this.value)"><button class="reset" onclick="rst('hlH',32)">↺</button></div>
+    <div class="row"><label>highlight padding-X (px)</label><input type="range" id="hlPX" min="4" max="40" step="1" value="14" oninput="upd('hlPX',this.value)"><button class="reset" onclick="rst('hlPX',14)">↺</button></div>
+    <div class="row"><label>highlight radius (px)</label><input type="range" id="hlR" min="0" max="20" step="1" value="6" oninput="upd('hlR',6)"><button class="reset" onclick="rst('hlR',6)">↺</button></div>
+    <div class="row color"><label>highlight color</label><input type="color" id="hlColor" value="#dbe7d6" oninput="upd('hlColor',this.value)"><button class="reset" onclick="rst('hlColor','#dbe7d6')">↺</button></div>
+    <div class="row"><label>highlight opacity hover</label><input type="range" id="hlOp" min="0" max="1" step="0.05" value="1" oninput="upd('hlOp',this.value)"><button class="reset" onclick="rst('hlOp',1)">↺</button></div>
+  </details>
+
+  <details class="group" open>
+    <summary>🎨 Strip background + מימדים</summary>
+    <div class="row color"><label>strip bg</label><input type="color" id="stripBg" value="#fcf9f6" oninput="upd('stripBg',this.value)"><button class="reset" onclick="rst('stripBg','#fcf9f6')">↺</button></div>
+    <div class="row"><label>strip aspect (W:H)</label><input type="range" id="stripAR" min="3" max="10" step="0.1" value="6.31" oninput="upd('stripAR',this.value)"><button class="reset" onclick="rst('stripAR',6.31)">↺</button></div>
+  </details>
+
+  <details class="group">
+    <summary>📤 CSS Diff</summary>
+    <div id="diffOut" class="diff-box">לחץ Export</div>
+  </details>
+</div>
+
+<script>
+const DEFAULTS = {
+  logoW:45, logoR:0, logoT:50, logoMaxH:220,
+  x_home:610, x_branches:470, x_about:330, x_jobs:190, x_club:50, auto:0,
+  itemGap:140, groupX:0, groupMode:'off',
+  ftSize:22, ftWeight:'700', ftColor:'#1a6147',
+  iconSW:2, iconY:60, textY:123,
+  activeItem:'home',
+  hlY:100, hlH:32, hlPX:14, hlR:6, hlColor:'#dbe7d6', hlOp:1,
+  stripBg:'#fcf9f6', stripAR:6.31
+};
+const state = {...DEFAULTS};
+const LS_KEY = 'desktop_nav_tuner_state';
+
+const ITEMS = [
+  {id:'home',     label:'בית',         hwidth:60},
+  {id:'branches', label:'סניפים',      hwidth:88},
+  {id:'about',    label:'אודותינו',    hwidth:100},
+  {id:'jobs',     label:'דרושים',      hwidth:88},
+  {id:'club',     label:'מועדון הטבות',hwidth:144}
+];
+
+function getX(id){
+  if(state.groupMode==='on'){
+    // Uniform gap mode: rightmost item at base + groupX, then minus gap per next item
+    const idx = ITEMS.findIndex(it=>it.id===id);
+    const base = 610 + state.groupX; // base = home position + offset
+    return Math.round(base - idx * state.itemGap);
+  }
+  if(state.auto>0){
+    const range = 660;
+    const idx = ITEMS.findIndex(it=>it.id===id);
+    const N = ITEMS.length;
+    return Math.round(range * (N-idx-0.5)/N);
+  }
+  return state['x_'+id];
+}
+
+function applyToFrame(){
+  const f = document.getElementById('if');
+  const d = f.contentDocument; if(!d) return;
+  let st = d.getElementById('__nav_tuner');
+  if(!st){ st = d.createElement('style'); st.id='__nav_tuner'; d.head.appendChild(st); }
+  // Update SVG element transforms + highlights
+  const svg = d.querySelector('.main-menu-svg');
+  if(svg){
+    const navItems = svg.querySelectorAll('.nav-item');
+    ITEMS.forEach((it, idx)=>{
+      const x = getX(it.id);
+      const navItem = navItems[idx];
+      if(!navItem) return;
+      // Only the OUTER <g> (direct child of <a>) gets X position
+      const outerG = navItem.querySelector(':scope > g');
+      if(outerG) outerG.setAttribute('transform', `translate(${x}, 0)`);
+      // Inner icon group: keep at translate(0, iconY)
+      const iconG = outerG ? outerG.querySelector(':scope > g') : null;
+      if(iconG) iconG.setAttribute('transform', `translate(0, ${state.iconY})`);
+      // Highlight rect
+      const highlight = navItem.querySelector('.nav-highlight');
+      if(highlight){
+        highlight.setAttribute('transform', `translate(${x}, 0)`);
+        highlight.setAttribute('x', -((it.hwidth+state.hlPX*2)/2));
+        highlight.setAttribute('width', it.hwidth+state.hlPX*2);
+        highlight.setAttribute('y', state.hlY);
+        highlight.setAttribute('height', state.hlH);
+        highlight.setAttribute('rx', state.hlR);
+      }
+      // Hit rect
+      const hit = navItem.querySelector('.nav-hit');
+      if(hit){
+        hit.setAttribute('x', x - 70);
+        hit.setAttribute('width', 140);
+      }
+      // Text Y
+      const text = navItem.querySelector('text');
+      if(text){
+        text.setAttribute('y', state.textY);
+      }
+      // active class
+      navItem.classList.toggle('nav-active', it.id===state.activeItem);
+    });
+    // Background rect
+    const bg = svg.querySelector('rect:first-child');
+    if(bg) bg.setAttribute('fill', state.stripBg);
+  }
+  // Inject CSS overrides
+  st.textContent = `
+    .strip-logo {
+      width: ${state.logoW}% !important;
+      right: ${state.logoR}% !important;
+      top: ${state.logoT}% !important;
+      max-height: ${state.logoMaxH}% !important;
+    }
+    .main-menu-svg .nav-text {
+      font-size: ${state.ftSize}px !important;
+      font-weight: ${state.ftWeight} !important;
+      fill: ${state.ftColor} !important;
+    }
+    .main-menu-svg .nav-icon,
+    .main-menu-svg path[stroke="#1A6147"],
+    .main-menu-svg circle[stroke="#1A6147"],
+    .main-menu-svg rect[stroke="#1A6147"],
+    .main-menu-svg line[stroke="#1A6147"],
+    .main-menu-svg polygon[stroke="#1A6147"] {
+      stroke-width: ${state.iconSW} !important;
+      stroke: ${state.ftColor} !important;
+    }
+    .main-menu-svg .nav-highlight { fill: ${state.hlColor} !important; }
+    .main-menu-svg .nav-item:hover .nav-highlight,
+    .main-menu-svg .nav-active .nav-highlight {
+      opacity: ${state.hlOp} !important;
+    }
+    .slice-top-bar { aspect-ratio: ${state.stripAR} / 1 !important; overflow: visible !important; }
+    .svg-slice[data-y="0"] { overflow: visible !important; }
+  `;
+  saveState();
+  updStat();
+}
+
+function upd(k,v){
+  state[k]=isNaN(parseFloat(v))?v:parseFloat(v);
+  // Auto-enable group mode when user touches itemGap or groupX
+  if((k==='itemGap'||k==='groupX') && state.groupMode==='off'){
+    state.groupMode='on';
+    const el=document.getElementById('groupMode');
+    if(el) el.value='on';
+  }
+  applyToFrame();
+}
+function rst(k,v){ state[k]=v; const el=document.getElementById(k); if(el){if(el.type==='color')el.value=v;else el.value=v;} applyToFrame(); }
+function resetAll(){ Object.keys(DEFAULTS).forEach(k=>{state[k]=DEFAULTS[k]; const el=document.getElementById(k); if(el)el.value=DEFAULTS[k];}); applyToFrame(); }
+function saveState(){ try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){} }
+function loadState(){ try{const raw=localStorage.getItem(LS_KEY); if(!raw) return false; const data=JSON.parse(raw); Object.keys(data).forEach(k=>{if(k in DEFAULTS) state[k]=data[k];}); Object.keys(state).forEach(k=>{const el=document.getElementById(k); if(el)el.value=state[k];}); return true;}catch(e){return false;} }
+function clearState(){ if(!confirm('Clear saved state?')) return; localStorage.removeItem(LS_KEY); resetAll(); }
+function reloadFrame(){ const f=document.getElementById('if'); f.src=f.src.split('?')[0]+'?nocache='+Date.now(); }
+
+function diffEntries(){ return Object.keys(DEFAULTS).filter(k=>state[k]!==DEFAULTS[k]).map(k=>({k,was:DEFAULTS[k],now:state[k]})); }
+function updStat(){ document.getElementById('stat').textContent = `${diffEntries().length} changes`; }
+
+function exportDiff(){
+  const d=diffEntries();
+  if(!d.length){document.getElementById('diffOut').textContent='אין שינויים.';return;}
+  let out=`/* desktop-nav-tuner diff — ${new Date().toISOString().slice(0,10)} */\n\n`;
+  out += `/* SVG inline updates (apply to <svg class="main-menu-svg"> in index.html) */\n`;
+  ITEMS.forEach(it=>{
+    if(state['x_'+it.id]!==DEFAULTS['x_'+it.id]||state.auto>0){
+      const x = getX(it.id);
+      out += `<!-- ${it.label}: transform="translate(${x}, 0)" -->\n`;
+    }
+  });
+  out += `\n/* CSS — append to .strip-logo + .main-menu-svg rules */\n`;
+  if(state.logoW!==45||state.logoR!==0||state.logoT!==50||state.logoMaxH!==220){
+    out += `.strip-logo {\n`;
+    if(state.logoW!==45) out += `  width: ${state.logoW}% !important;\n`;
+    if(state.logoR!==0) out += `  right: ${state.logoR}% !important;\n`;
+    if(state.logoT!==50) out += `  top: ${state.logoT}% !important;\n`;
+    if(state.logoMaxH!==220) out += `  max-height: ${state.logoMaxH}% !important;\n`;
+    out += `}\n`;
+  }
+  if(state.ftSize!==22||state.ftWeight!=='700'||state.ftColor!=='#1a6147'){
+    out += `.main-menu-svg .nav-text {\n`;
+    if(state.ftSize!==22) out += `  font-size: ${state.ftSize}px !important;\n`;
+    if(state.ftWeight!=='700') out += `  font-weight: ${state.ftWeight} !important;\n`;
+    if(state.ftColor!=='#1a6147') out += `  fill: ${state.ftColor} !important;\n`;
+    out += `}\n`;
+  }
+  if(state.iconSW!==2||state.ftColor!=='#1a6147'){
+    out += `.main-menu-svg .nav-icon, .main-menu-svg [stroke="#1A6147"] {\n  stroke-width: ${state.iconSW} !important;\n  stroke: ${state.ftColor} !important;\n}\n`;
+  }
+  if(state.hlColor!=='#dbe7d6'||state.hlOp!==1){
+    out += `.main-menu-svg .nav-highlight { fill: ${state.hlColor} !important; }\n`;
+    out += `.main-menu-svg .nav-item:hover .nav-highlight, .main-menu-svg .nav-active .nav-highlight { opacity: ${state.hlOp} !important; }\n`;
+  }
+  if(state.stripBg!=='#fcf9f6'){
+    out += `<!-- SVG <rect> background fill: ${state.stripBg} -->\n`;
+  }
+  if(state.stripAR!==6.31){
+    out += `.slice-top-bar { aspect-ratio: ${state.stripAR} / 1 !important; }\n`;
+  }
+  document.getElementById('diffOut').textContent = out;
+  navigator.clipboard?.writeText(out).catch(()=>{});
+}
+
+document.getElementById('if').addEventListener('load', ()=>{
+  loadState();
+  setTimeout(applyToFrame, 500);
+});
+</script>
+</body></html>
