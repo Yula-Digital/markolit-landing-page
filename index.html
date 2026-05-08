@@ -268,13 +268,13 @@
       box-sizing: border-box;
       border-radius: 8px;
     }
-    /* Club overlay — match other SVG-baked menu items style (icon + text, transparent bg) */
+    /* Club overlay — bg only on inner band (not full strip height), matches slice cream */
     .nav-club {
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      background: rgb(243, 239, 233) !important; /* match nav strip cream — masks SVG */
-      overflow: hidden !important;
+      background: transparent !important;
+      overflow: visible !important;
       color: var(--green) !important;
     }
     .nav-club-inner {
@@ -282,18 +282,21 @@
       align-items: center;
       gap: 6px;
       direction: rtl;
+      background: #fcf9f6;       /* match nav strip image bg (sampled pixel) */
+      padding: 4px 10px;
+      border-radius: 6px;
     }
     .nav-club-icon {
-      width: clamp(14px, 1.6vw, 22px);
-      height: clamp(14px, 1.6vw, 22px);
+      width: clamp(11px, 1.05vw, 16px);
+      height: clamp(11px, 1.05vw, 16px);
       flex-shrink: 0;
       color: var(--green);
     }
     .nav-club-text {
       color: var(--green);
       font-family: 'Heebo', sans-serif;
-      font-weight: 800;
-      font-size: clamp(0.55rem, 1vw, 0.95rem);
+      font-weight: 600;
+      font-size: clamp(0.5rem, 0.78vw, 0.78rem);
       line-height: 1;
       white-space: nowrap;
     }
