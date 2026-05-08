@@ -522,16 +522,19 @@
     .navbar {
       position: fixed;
       top: 0;
-      left: 0;
-      right: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(100vw, 720px);
+      max-width: 720px;
       z-index: 300;
       background: var(--cream);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 24px;
+      padding: 8px 18px;
       gap: 12px;
       box-shadow: 0 1px 0 rgba(200,198,192,0.4);
+      border-radius: 0 0 12px 12px;
     }
     body { padding-top: 64px; }
 
