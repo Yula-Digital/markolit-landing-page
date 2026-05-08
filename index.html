@@ -1058,25 +1058,9 @@
         order: unset;
       }
 
-      /* FIX 2: לוגו 48px + תמונה נכונה */
-      .logo-badge {
-        order: unset;
-        width: 48px !important;
-        height: 48px !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        border-radius: 0 !important;
-        overflow: visible;
-      }
-      .logo-badge::before {
-        content: '';
-        display: block;
-        width: 48px;
-        height: 48px;
-        background: url('assets/images/trans_logo_marcolit.png') center/contain no-repeat;
-      }
+      /* Logo badge handled in MOBILE TUNER FINAL block below — only hide spans here */
       .logo-name, .logo-sub, .logo-tractor { display: none !important; }
+      .hamburger { order: unset; }
 
       /* הסתרת תפריט SVG */
       .slice-top-bar { display: none !important; }
@@ -1154,27 +1138,35 @@
 
       /* Navbar + logo isolated */
       .navbar {
-        padding: 3px 15px !important;
+        padding: 3px 27px !important;
         min-height: 73px !important;
         align-items: center !important;
       }
       .logo-badge {
-        width: 64px !important;
-        height: 64px !important;
+        width: 55px !important;
+        height: 55px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         background: transparent !important;
         flex-shrink: 0 !important;
+        overflow: visible !important;
+        position: relative !important;
       }
+      /* Inner image: visual size 173px, anchored center, overflows box without affecting layout */
       .logo-badge::before {
         content: '';
         display: block !important;
-        width: 64px !important;
-        height: 64px !important;
-        max-width: 64px !important;
-        max-height: 64px !important;
+        width: 173px !important;
+        height: 173px !important;
+        max-width: none !important;
+        max-height: none !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
         background: url('assets/images/trans_logo_marcolit.png') center/contain no-repeat !important;
+        pointer-events: none !important;
       }
 
       /* Sub + button on SAME row, title above */
