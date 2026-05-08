@@ -35,10 +35,61 @@
     body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay) {
       display: none !important;
     }
-    /* Desktop: SVG nav handles it — hide CSS navbar */
-    .navbar { display: none !important; }
-    /* Social icons in navbar — hidden on desktop, shown on mobile */
-    .navbar-socials { display: none; }
+    /* Desktop AND mobile use CSS navbar (replaces SVG-baked nav strip) */
+    /* Logo: hide text spans always — show image only via ::before */
+    .logo-badge .logo-name,
+    .logo-badge .logo-sub,
+    .logo-badge .logo-tractor { display: none !important; }
+    .logo-badge {
+      background: transparent !important;
+      box-shadow: none !important;
+      width: 96px !important;
+      height: 60px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+      overflow: visible !important;
+      position: relative !important;
+    }
+    .logo-badge::before {
+      content: '';
+      display: block;
+      width: 96px;
+      height: 60px;
+      background: url('assets/images/trans_logo_marcolit.png') center/contain no-repeat;
+    }
+    /* Social icons in navbar — visible on BOTH desktop + mobile */
+    .navbar-socials {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .navbar-social {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .navbar-social svg { width: 100%; height: 100%; display: block; }
+    /* Hide SVG-baked nav strip — replaced with CSS navbar */
+    .slice-top-bar { display: none !important; }
+    /* Hide hit-main-nav (SVG hit areas no longer needed) */
+    .hit-main-nav { display: none !important; }
+    /* Mask the base-art PNG nav strip portion (top 17.6% of slice 1) on ALL viewports — CSS navbar replaces */
+    .svg-slice[data-y="0"]::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 17.6%;
+      background: var(--cream);
+      z-index: 3;
+      pointer-events: none;
+    }
 
     .exact-svg-page {
       min-height: 100vh;
@@ -469,16 +520,20 @@
        NAVBAR
     ══════════════════════════════════ */
     .navbar {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 300;
       background: var(--cream);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 18px;
+      padding: 8px 24px;
       gap: 12px;
+      box-shadow: 0 1px 0 rgba(200,198,192,0.4);
     }
+    body { padding-top: 64px; }
 
     /* Hamburger (mobile-only) */
     .hamburger {
@@ -1326,7 +1381,7 @@
       <a class="hit hit-main-nav" href="#branches" aria-label="סניפים" style="left: 46%; width: 14%;"></a>
       <a class="hit hit-main-nav" href="#about" aria-label="אודותינו" style="left: 32%; width: 14%;"></a>
       <a class="hit hit-main-nav" href="#jobs" aria-label="דרושים" style="left: 19%; width: 13%;"></a>
-      <a class="hit hit-main-nav nav-club" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפות למועדון ההטבות" style="left: 1%; width: 18%;"><span class="nav-club-inner"><svg class="nav-club-icon" viewBox="0 0 64 64" aria-hidden="true"><polygon points="42,8 47,21 60,22 50,31 53,44 42,37 31,44 34,31 24,22 37,21" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M8,42 C8,38 12,36 16,36 L36,36 C44,36 48,40 48,40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M8,42 L8,52 L14,52 L14,42 Z" fill="currentColor"/></svg><span class="nav-club-text">מועדון הטבות</span></span></a>
+<!-- nav-club overlay removed — replaced by CSS navbar nav-links -->
       <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="תוצרת טריה כל יום" style="left: 5%; top: 82%; width: 20%; height: 14%;"></a>
       <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="מבצעים שבועיים" style="left: 29%; top: 82%; width: 18%; height: 14%;"></a>
       <a class="hit" href="#service" aria-label="שירות עם חיוך" style="left: 52%; top: 82%; width: 18%; height: 14%;"></a>
