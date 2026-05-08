@@ -37,6 +37,8 @@
     }
     /* Desktop: SVG nav handles it — hide CSS navbar */
     .navbar { display: none !important; }
+    /* Social icons in navbar — hidden on desktop, shown on mobile */
+    .navbar-social { display: none; }
 
     .exact-svg-page {
       min-height: 100vh;
@@ -1142,6 +1144,26 @@
         min-height: 73px !important;
         align-items: center !important;
       }
+      /* Mobile group: socials around logo, centered */
+      .navbar-logo-group {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+      .navbar-social {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 28px !important;
+        height: 28px !important;
+        line-height: 0 !important;
+        flex-shrink: 0 !important;
+      }
+      .navbar-social svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
       .logo-badge {
         width: 55px !important;
         height: 55px !important;
@@ -1262,10 +1284,11 @@
       <a class="hit hit-main-nav" href="#branches" aria-label="סניפים" style="left: 46%; width: 14%;"></a>
       <a class="hit hit-main-nav" href="#about" aria-label="אודותינו" style="left: 32%; width: 14%;"></a>
       <a class="hit hit-main-nav" href="#jobs" aria-label="דרושים" style="left: 19%; width: 13%;"></a>
-      <a class="hit hit-main-nav" href="#contact" aria-label="צור קשר" style="left: 1%; width: 18%;"></a>
-      <a class="hit" href="#fresh" aria-label="תוצרת טריה כל יום" style="left: 5%; top: 82%; width: 20%; height: 14%;"></a>
-      <a class="hit" href="#prices" aria-label="מחירים הוגנים" style="left: 29%; top: 82%; width: 18%; height: 14%;"></a>
+      <a class="hit hit-main-nav" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפות למועדון ההטבות" style="left: 1%; width: 18%;"></a>
+      <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="תוצרת טריה כל יום" style="left: 5%; top: 82%; width: 20%; height: 14%;"></a>
+      <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="מבצעים שבועיים" style="left: 29%; top: 82%; width: 18%; height: 14%;"></a>
       <a class="hit" href="#service" aria-label="שירות עם חיוך" style="left: 52%; top: 82%; width: 18%; height: 14%;"></a>
+      <a class="hit" href="#meat" aria-label="בשרים איכותיים" style="left: 75%; top: 82%; width: 20%; height: 14%;"></a>
     </section>
 
     <!-- Swapped order: deals first -->
@@ -1275,7 +1298,7 @@
         <div class="section-card-copy">
           <p class="section-card-title">מבצעים מתחדשים</p>
           <p class="section-card-sub">כל שבוע מבצעי שלישוק בשבילך</p>
-          <span class="section-card-btn">שלישוק במרכולית</span>
+          <a class="section-card-btn" href="https://l5k.me/avn6C" target="_blank" rel="noopener" style="text-decoration:none">שלישוק במרכולית</a>
         </div>
         <div class="section-card-figure">
           <img
@@ -1288,7 +1311,7 @@
           />
         </div>
       </div>
-      <a class="hit" href="#deals" aria-label="שלישוק במרכולית" style="left: 5%; top: 60%; width: 25%; height: 22%;"></a>
+      <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="שלישוק במרכולית" style="left: 5%; top: 60%; width: 25%; height: 22%;"></a>
     </section>
 
     <section class="svg-slice" id="fresh" data-y="585" style="--y: 585; --h: 187;" aria-label="מוצרים טריים">
@@ -1334,7 +1357,7 @@
       </div>
       <a class="hit" href="#jobs" aria-label="בואו לעבוד אצלנו" style="left: 5%; top: 52%; width: 25%; height: 22%;"></a>
       <a class="hit" href="#privacy" aria-label="מדיניות פרטיות ותנאי שימוש" style="left: 43%; bottom: 1%; width: 28%; height: 12%;"></a>
-      <a class="hit" href="#contact" aria-label="צור קשר" style="left: 32%; bottom: 1%; width: 9%; height: 12%;"></a>
+      <a class="hit" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפות למועדון ההטבות" style="left: 32%; bottom: 1%; width: 9%; height: 12%;"></a>
       <a class="hit" href="#branches" aria-label="סניפים" style="left: 22%; bottom: 1%; width: 9%; height: 12%;"></a>
       <a class="hit" href="#jobs" aria-label="דרושים" style="left: 12%; bottom: 1%; width: 9%; height: 12%;"></a>
     </section>
@@ -1350,14 +1373,39 @@
       font-family: 'Heebo', sans-serif;
       width: 100%;
       direction: rtl;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
     ">
       <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">מדיניות פרטיות ותנאי שימוש</a>
-      <span style="margin: 0 6px; opacity: 0.4; color: var(--green);">|</span>
-      <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">צור קשר</a>
-      <span style="margin: 0 6px; opacity: 0.4; color: var(--green);">|</span>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
+      <a href="https://lp6.me/w0plE" target="_blank" rel="noopener" style="color: var(--green); text-decoration: none; font-weight: 700;">הצטרפות למועדון</a>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
       <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">סניפים</a>
-      <span style="margin: 0 6px; opacity: 0.4; color: var(--green);">|</span>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
       <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">דרושים</a>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
+      <a class="social-link" href="https://www.facebook.com/reshetmarkolit/" target="_blank" rel="noopener" aria-label="Facebook" style="display:inline-flex;align-items:center;line-height:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+      <a class="social-link" href="https://www.instagram.com/markolit_supermarket/" target="_blank" rel="noopener" aria-label="Instagram" style="display:inline-flex;align-items:center;line-height:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+          <defs>
+            <linearGradient id="ig-grad-footer" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#feda75"/>
+              <stop offset="25%" stop-color="#fa7e1e"/>
+              <stop offset="50%" stop-color="#d62976"/>
+              <stop offset="75%" stop-color="#962fbf"/>
+              <stop offset="100%" stop-color="#4f5bd5"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig-grad-footer)"/>
+          <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="1.6"/>
+          <circle cx="17.5" cy="6.5" r="1.1" fill="#fff"/>
+        </svg>
+      </a>
     </footer>
 
   </div>
@@ -1366,20 +1414,44 @@
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar" role="navigation" aria-label="ניווט ראשי">
 
-  <!-- Logo badge — FIRST in HTML → RIGHT side in RTL ✓ -->
-  <a href="#" class="logo-badge" aria-label="מרכולית - חוויית כפרית, עמוד ראשי">
-    <span class="logo-name">מרכולית</span>
-    <span class="logo-sub">חוויית כפרית</span>
-    <span class="logo-tractor" aria-hidden="true">🚜</span>
-  </a>
+  <!-- Mobile group: social-FB → logo → social-IG (logo between socials) -->
+  <div class="navbar-logo-group">
+    <a class="navbar-social fb" href="https://www.facebook.com/reshetmarkolit/" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
 
-  <!-- Desktop links — RTL: בית at RIGHT, צור קשר at LEFT -->
+    <!-- Logo badge — center between socials on mobile -->
+    <a href="#" class="logo-badge" aria-label="מרכולית - חוויית כפרית, עמוד ראשי">
+      <span class="logo-name">מרכולית</span>
+      <span class="logo-sub">חוויית כפרית</span>
+      <span class="logo-tractor" aria-hidden="true">🚜</span>
+    </a>
+
+    <a class="navbar-social ig" href="https://www.instagram.com/markolit_supermarket/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="ig-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#feda75"/>
+            <stop offset="25%" stop-color="#fa7e1e"/>
+            <stop offset="50%" stop-color="#d62976"/>
+            <stop offset="75%" stop-color="#962fbf"/>
+            <stop offset="100%" stop-color="#4f5bd5"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig-grad-nav)"/>
+        <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="1.6"/>
+        <circle cx="17.5" cy="6.5" r="1.1" fill="#fff"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Desktop links — RTL: בית at RIGHT, club at LEFT -->
   <ul class="nav-links" role="list">
     <li><a href="#">בית</a></li>
     <li><a href="#">סניפים</a></li>
     <li><a href="#">אודותינו</a></li>
     <li><a href="#">דרושים</a></li>
-    <li><a href="#">צור קשר</a></li>
+    <li><a href="https://lp6.me/w0plE" target="_blank" rel="noopener">הצטרפות למועדון ההטבות</a></li>
   </ul>
 
   <!-- Hamburger — LAST in HTML → LEFT side in RTL ✓ (mobile only) -->
@@ -1396,7 +1468,7 @@
   <a href="#" onclick="closeNav()">סניפים</a>
   <a href="#" onclick="closeNav()">אודותינו</a>
   <a href="#" onclick="closeNav()">דרושים</a>
-  <a href="#" onclick="closeNav()">צור קשר</a>
+  <a href="https://lp6.me/w0plE" target="_blank" rel="noopener" onclick="closeNav()">הצטרפות למועדון ההטבות</a>
 </nav>
 
 
