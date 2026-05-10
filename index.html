@@ -314,31 +314,18 @@
       overflow: hidden;
     }
 
-    /* Mask: cut smile + its label from strip — small ellipse, leaves neighbors intact */
+    /* Mask: cut smile + baked label from strip; vertical 38% leaves strip frame top/bottom intact */
     .benefits-strip-svg {
-      -webkit-mask-image: radial-gradient(ellipse 8.5% 50% at 62.5% 50%, transparent 0 99%, #000 100%);
-      mask-image: radial-gradient(ellipse 8.5% 50% at 62.5% 50%, transparent 0 99%, #000 100%);
+      -webkit-mask-image: radial-gradient(ellipse 9% 38% at 62.5% 50%, transparent 0 96%, #000 100%);
+      mask-image: radial-gradient(ellipse 9% 38% at 62.5% 50%, transparent 0 96%, #000 100%);
     }
-    /* Replacement icon — placed at the smile slot, matches sibling icon dimensions */
+    /* Combined badge + label (single transparent SVG) replaces masked smile slot */
     .club-icon-replace {
       position: absolute;
       z-index: 6;
       object-fit: contain;
       pointer-events: none;
       display: block;
-    }
-    .club-icon-replace + .club-label-replace {
-      position: absolute;
-      z-index: 6;
-      font-family: 'Suez One','Heebo','Arial',serif;
-      font-weight: 400;
-      color: #1A6147;
-      text-align: center;
-      line-height: 1.05;
-      font-size: clamp(0.5rem, calc(10 / 720 * var(--stage)), 0.74rem);
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-      pointer-events: none;
     }
 
     .hit:focus-visible {
@@ -1488,10 +1475,8 @@
 <!-- nav-club overlay removed — replaced by CSS navbar nav-links -->
       <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="תוצרת טריה כל יום" style="left: 5%; top: 82%; width: 20%; height: 14%;"></a>
       <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="מבצעים שבועיים" style="left: 29%; top: 82%; width: 18%; height: 14%;"></a>
-      <img class="club-icon-replace" src="assets/images/join_the_club.png" alt="" aria-hidden="true" decoding="async"
-           style="left: 54.84%; top: 76%; width: 13%; height: 13%;" />
-      <span class="club-label-replace" aria-hidden="true"
-            style="left: 61.34%; top: 91%; width: 16%; transform: translateX(-50%);">הצטרפו למועדון<br>ההטבות</span>
+      <img class="club-icon-replace" src="assets/images/join_club_combined.svg" alt="" aria-hidden="true" decoding="async"
+           style="left: 50.34%; top: 73%; width: 22%; height: 22%;" />
       <a class="hit" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפו למועדון ההטבות" style="left: 52%; top: 82%; width: 18%; height: 14%;"></a>
       <a class="hit" href="#meat" aria-label="בשרים איכותיים" style="left: 75%; top: 82%; width: 20%; height: 14%;"></a>
     </section>
