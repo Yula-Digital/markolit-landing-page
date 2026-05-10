@@ -314,15 +314,14 @@
       overflow: hidden;
     }
 
-    /* Mask matches image bounds exactly — no baked content leaks anywhere inside replacement
-       Strip range 5.4-94.9% slice horiz / 71.8-96.6% slice vert
-       Mask ellipse 12.5%×40% strip = 11.19%×9.92% slice radius
-       Image sized 22.38%×19.84% slice = exact mask diameter on both axes */
-    .benefits-strip-svg {
-      -webkit-mask-image: radial-gradient(ellipse 11% 43% at 62.5% 50%, transparent 0 99%, #000 100%);
-      mask-image: radial-gradient(ellipse 11% 43% at 62.5% 50%, transparent 0 99%, #000 100%);
+    /* Cream cover — opaque rectangle hides baked smile + label without touching strip frame */
+    .club-cover {
+      position: absolute;
+      z-index: 5;
+      background: var(--cream);
+      pointer-events: none;
     }
-    /* Combined badge + label (single transparent SVG) replaces masked smile slot */
+    /* Combined badge + label (single transparent SVG) on top of cream cover */
     .club-icon-replace {
       position: absolute;
       z-index: 6;
@@ -1478,6 +1477,8 @@
 <!-- nav-club overlay removed — replaced by CSS navbar nav-links -->
       <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="תוצרת טריה כל יום" style="left: 5%; top: 82%; width: 20%; height: 14%;"></a>
       <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="מבצעים שבועיים" style="left: 29%; top: 82%; width: 18%; height: 14%;"></a>
+      <div class="club-cover" aria-hidden="true"
+           style="left: 51.49%; top: 73.54%; width: 19.69%; height: 21.32%;"></div>
       <img class="club-icon-replace" src="assets/images/join_club_combined.svg" alt="" aria-hidden="true" decoding="async"
            style="left: 51.49%; top: 73.54%; width: 19.69%; height: 21.32%;" />
       <a class="hit" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפו למועדון ההטבות" style="left: 52%; top: 82%; width: 18%; height: 14%;"></a>
