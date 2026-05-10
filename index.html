@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal) {
+    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal):not(.jb-modal) {
       display: none !important;
     }
     /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
@@ -2595,6 +2595,149 @@
     }
   }, true);
   window.MarkAboutModal = { open, close };
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     JOBS MODAL — opens on any "דרושים" link
+     Two containers: image (top) + text + CTA button (bottom)
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .jb-modal { display:none !important; position:fixed; inset:0; z-index:9999; font-family:'Rubik','Heebo','Arial',sans-serif; }
+  .jb-modal[data-open="true"] { display:block !important; }
+  .jb-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px); }
+  .jb-box {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 720px); max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+  }
+  .jb-header {
+    padding:20px 22px 12px; position:relative; text-align:center;
+    border-bottom:1px solid rgba(26,97,71,.12); flex-shrink:0;
+  }
+  .jb-close-x {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .jb-close-x:hover { background:#f0e7d0; }
+  .jb-title {
+    margin:0; color:#1A6147; font-size:1.5rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .jb-title-icon {
+    width:24px; height:24px; flex-shrink:0;
+    fill:none; stroke:#1A6147; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .jb-body {
+    flex:1; overflow-y:auto; padding:14px 22px 4px; min-height:0;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .jb-image-wrap {
+    background:#F0EBD8; border:1px solid rgba(26,97,71,.12); border-radius:14px;
+    overflow:hidden; flex-shrink:0;
+  }
+  .jb-image-wrap img {
+    width:100%; height:220px; object-fit:cover; object-position:center; display:block;
+  }
+  .jb-content {
+    background:#F8F0E5; border:1px solid rgba(26,97,71,.12); border-radius:14px;
+    padding:18px 22px; color:#2c2c2c; font-size:0.92rem; line-height:1.75; font-weight:400;
+  }
+  .jb-content p { margin:0 0 10px; }
+  .jb-content p:last-child { margin-bottom:0; }
+  .jb-content strong { color:#1A6147; font-weight:600; }
+  .jb-content em { font-style:normal; color:#1A6147; font-weight:600; }
+  div.jb-footer, .jb-footer {
+    padding:14px 22px 18px; flex-shrink:0;
+    display:flex; flex-direction:column; gap:10px; align-items:center;
+    background:transparent; border-top:1px solid rgba(26,97,71,.12);
+  }
+  .jb-cta-btn {
+    background:#1A6147; color:#fff; border:0; padding:12px 36px; border-radius:10px;
+    font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer;
+    transition:background .15s; text-decoration:none; display:inline-block;
+    min-width:200px; text-align:center;
+  }
+  .jb-cta-btn:hover { background:#0F4E37; }
+  .jb-close-link {
+    background:none; border:0; color:#666; font-family:inherit; font-size:0.85rem;
+    cursor:pointer; text-decoration:underline; padding:4px 8px;
+  }
+  .jb-close-link:hover { color:#1A6147; }
+
+  @media (max-width: 720px) {
+    .jb-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .jb-title { font-size:1.2rem; }
+    .jb-body { padding:12px 14px 4px; gap:10px; }
+    .jb-image-wrap img { height:170px; }
+    .jb-content { padding:14px 16px; font-size:0.86rem; line-height:1.7; }
+    .jb-footer { padding:12px 16px 14px; }
+    .jb-cta-btn { padding:11px 28px; font-size:0.92rem; min-width:180px; }
+    .jb-close-x { top:10px; left:10px; width:30px; height:30px; font-size:20px; }
+  }
+</style>
+
+<div class="jb-modal" id="jobs-modal" role="dialog" aria-modal="true" aria-labelledby="jb-title">
+  <div class="jb-backdrop" onclick="MarkJobsModal.close()"></div>
+  <div class="jb-box">
+    <header class="jb-header">
+      <button class="jb-close-x" onclick="MarkJobsModal.close()" aria-label="סגור">×</button>
+      <h2 class="jb-title" id="jb-title">
+        <svg class="jb-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="7" width="16" height="13" rx="2"/>
+          <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 12h16"/>
+        </svg>
+        בואו לעבוד איתנו
+      </h2>
+    </header>
+    <div class="jb-body">
+      <div class="jb-image-wrap">
+        <img src="assets/images/employee.png" alt="צוות מרכולית בסניף" decoding="async" />
+      </div>
+      <div class="jb-content">
+        <p><strong>רשת מרכולית מחפשת אתכם למגוון תפקידים.</strong></p>
+        <p>העבודה במטה ובסניפים היא באווירה נעימה ומשפחתית. אנחנו יודעים להעריך כל סוג של משרה ודבקים במשפט <em>"כל עבודה מכבדת את בעליה"</em>.</p>
+        <p>השכר אצלנו יותר מהוגן ואפשרויות הקידום פתוחות בפני המתאימים.</p>
+        <p>אז… אם אתם בעניין — הגישו מועמדות לסניף ולמשרה המבוקשת.</p>
+      </div>
+    </div>
+    <div class="jb-footer">
+      <a class="jb-cta-btn" href="https://hrapp.yula-digital.com/form/markolit" target="_blank" rel="noopener">להגיש מועמדות עכשיו ←</a>
+      <button class="jb-close-link" onclick="MarkJobsModal.close()">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  function open(){
+    $('jobs-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+  }
+  function close(){
+    $('jobs-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape' && $('jobs-modal').getAttribute('data-open')==='true') close();
+  });
+  document.addEventListener('click', e => {
+    // Skip if click is inside any open modal (don't intercept CTA inside modal)
+    if(e.target.closest('.jb-modal[data-open="true"]')) return;
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#jobs' || aria==='דרושים' || txt==='דרושים'){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true);
+  window.MarkJobsModal = { open, close };
 })();
 </script>
 
