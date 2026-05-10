@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head>
+<meta charset="utf-8"><title>📱 Hero Mobile Tuner</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:Heebo,Arial,sans-serif;background:#1a1a1a;color:#eee;display:grid;grid-template-columns:1fr 380px;height:100vh;overflow:hidden}
+  .preview-pane{padding:10px;overflow:auto;background:#202020;display:flex;gap:14px;flex-wrap:wrap;align-content:flex-start}
+  .device-frame{background:#000;border-radius:10px;padding:6px}
+  .device-frame h4{margin:2px 6px 6px;color:#9cf;font-size:11px;text-align:center}
+  iframe{display:block;border:0;background:#fff;border-radius:4px}
+  .controls{background:#161616;border-left:1px solid #333;padding:14px;overflow-y:auto;font-size:13px}
+  .controls h2{margin:0 0 10px;font-size:15px;color:#9cf;font-weight:600}
+  .row{display:grid;grid-template-columns:1fr 70px 26px;gap:5px;align-items:center;margin:4px 0}
+  .row label{font-size:11px;color:#bbb;line-height:1.2}
+  .row input[type=range]{width:100%}
+  .row input[type=number]{width:100%;background:#222;color:#eee;border:1px solid #444;padding:3px 5px;border-radius:3px;font:11px monospace}
+  .row .reset{background:#444;border:0;color:#aaa;width:24px;height:22px;border-radius:3px;cursor:pointer;font-size:12px}
+  .btn{background:#2a2a2a;color:#eee;border:1px solid #444;padding:6px 10px;border-radius:4px;cursor:pointer;font:13px Heebo}
+  .btn-primary{background:#1A6147;border-color:#1A6147;font-weight:600}
+  .btn-danger{background:#600;border-color:#900;font-size:11px}
+  .toolbar{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
+  .stat{font-size:11px;color:#888;margin:6px 0}
+  .group{background:#1f1f1f;border-radius:6px;padding:10px;margin-bottom:10px}
+  .group h3{margin:0 0 8px;font-size:13px;color:#fc6;border-bottom:1px solid #333;padding-bottom:4px}
+  .diff-box{background:#0d0d0d;border:1px solid #333;border-radius:4px;padding:10px;font:11px monospace;color:#9f9;margin-top:8px;max-height:200px;overflow:auto;white-space:pre-wrap;line-height:1.5}
+</style></head>
+<body>
+
+<div class="preview-pane">
+  <div class="device-frame"><h4>iPhone SE 375×667</h4><iframe id="if1" width="375" height="667"></iframe></div>
+  <div class="device-frame"><h4>iPhone 14 Pro 393×852</h4><iframe id="if2" width="393" height="852"></iframe></div>
+  <div class="device-frame"><h4>Galaxy S22 360×780</h4><iframe id="if3" width="360" height="780"></iframe></div>
+</div>
+
+<div class="controls">
+  <h2>📱 Hero Mobile Tuner</h2>
+  <div class="toolbar">
+    <button class="btn" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-primary" onclick="exportDiff()">📋 Export</button>
+    <button class="btn btn-danger" onclick="clearState()">🗑 Clear</button>
+    <button class="btn" onclick="reloadAll()">🔄 Reload</button>
+  </div>
+  <div class="stat" id="stat">0 changes</div>
+
+  <div class="group">
+    <h3>📰 כותרת ראשית (.hero-headline-wrap)</h3>
+    <div class="row"><label>width %</label><input type="range" id="hlW" min="20" max="100" step="0.5" value="62" oninput="upd('hlW',this.value)"><button class="reset" onclick="rst('hlW',62)">↺</button></div>
+    <div class="row"><label>shift X (px) — חיובי=ימינה</label><input type="range" id="hlX" min="-100" max="100" step="1" value="0" oninput="upd('hlX',this.value)"><button class="reset" onclick="rst('hlX',0)">↺</button></div>
+    <div class="row"><label>shift Y (px)</label><input type="range" id="hlY" min="-50" max="50" step="1" value="0" oninput="upd('hlY',this.value)"><button class="reset" onclick="rst('hlY',0)">↺</button></div>
+    <div class="row"><label>image scale %</label><input type="range" id="hlS" min="50" max="200" step="1" value="100" oninput="upd('hlS',this.value)"><button class="reset" onclick="rst('hlS',100)">↺</button></div>
+  </div>
+
+  <div class="group">
+    <h3>🔠 כותרת משנה (.hero-tagline-wrap)</h3>
+    <div class="row"><label>width %</label><input type="range" id="tlW" min="20" max="100" step="0.5" value="62" oninput="upd('tlW',this.value)"><button class="reset" onclick="rst('tlW',62)">↺</button></div>
+    <div class="row"><label>shift X (px) — חיובי=ימינה</label><input type="range" id="tlX" min="-100" max="100" step="1" value="2" oninput="upd('tlX',this.value)"><button class="reset" onclick="rst('tlX',2)">↺</button></div>
+    <div class="row"><label>shift Y (px)</label><input type="range" id="tlY" min="-50" max="50" step="1" value="0" oninput="upd('tlY',this.value)"><button class="reset" onclick="rst('tlY',0)">↺</button></div>
+    <div class="row"><label>font-size (rem)</label><input type="range" id="tlF" min="0.5" max="1.5" step="0.02" value="0.8" oninput="upd('tlF',this.value)"><button class="reset" onclick="rst('tlF',0.8)">↺</button></div>
+  </div>
+
+  <div class="group">
+    <h3>📤 CSS Diff</h3>
+    <div id="diffOut" class="diff-box">לחץ Export</div>
+  </div>
+</div>
+
+<script>
+const DEFAULTS = { hlW:62, hlX:0, hlY:0, hlS:100, tlW:62, tlX:2, tlY:0, tlF:0.8 };
+const LS_KEY = 'hero_mobile_tuner_state';
+let state = {...DEFAULTS};
+
+function getIframes(){return [...document.querySelectorAll('iframe')].filter(f=>f.contentDocument);}
+
+function applyToFrame(f){
+  try{
+    const d = f.contentDocument; if(!d) return;
+    let st = d.getElementById('__hero_tuner');
+    if(!st){ st = d.createElement('style'); st.id='__hero_tuner'; d.head.appendChild(st); }
+    st.textContent = `
+      @media (max-width: 599px) {
+        .hero-headline-wrap {
+          width: ${state.hlW}% !important;
+          transform: translate(${state.hlX}px, ${state.hlY}px) !important;
+        }
+        .hero-headline-wrap img {
+          transform: scale(${state.hlS/100}) !important;
+          transform-origin: center center !important;
+        }
+        .hero-tagline-wrap {
+          width: ${state.tlW}% !important;
+          transform: translate(${state.tlX}px, ${state.tlY}px) !important;
+          font-size: ${state.tlF}rem !important;
+        }
+      }
+    `;
+  }catch(e){console.warn(e);}
+}
+
+function applyAll(){ getIframes().forEach(applyToFrame); updStat(); saveState(); }
+function upd(k,v){ state[k]=parseFloat(v); applyAll(); }
+function rst(k,v){ state[k]=v; const el=document.getElementById(k); if(el)el.value=v; applyAll(); }
+function resetAll(){ Object.keys(DEFAULTS).forEach(k=>{state[k]=DEFAULTS[k]; const el=document.getElementById(k); if(el)el.value=DEFAULTS[k];}); applyAll(); }
+function saveState(){ try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){} }
+function loadState(){ try{const raw=localStorage.getItem(LS_KEY); if(!raw) return false; const data=JSON.parse(raw); Object.keys(data).forEach(k=>{if(k in DEFAULTS) state[k]=data[k];}); Object.keys(state).forEach(k=>{const el=document.getElementById(k); if(el)el.value=state[k];}); return true;}catch(e){return false;} }
+function clearState(){ if(!confirm('Clear?')) return; localStorage.removeItem(LS_KEY); resetAll(); }
+function reloadAll(){ getIframes().forEach(f=>{const s=f.dataset.src||f.src.split('?')[0]; f.src=s+'?ts='+Date.now();}); }
+
+function diffEntries(){ return Object.keys(DEFAULTS).filter(k=>state[k]!==DEFAULTS[k]); }
+function updStat(){ document.getElementById('stat').textContent = `${diffEntries().length} changes`; }
+
+function exportDiff(){
+  const d = diffEntries();
+  if(!d.length){ document.getElementById('diffOut').textContent='אין שינויים.'; return; }
+  let out = `/* hero-mobile-tuner export — ${new Date().toISOString().slice(0,10)} */\n\n@media (max-width: 599px) {\n`;
+  if(state.hlW!==DEFAULTS.hlW||state.hlX!==DEFAULTS.hlX||state.hlY!==DEFAULTS.hlY){
+    out += `  .hero-headline-wrap {\n`;
+    if(state.hlW!==DEFAULTS.hlW) out += `    width: ${state.hlW}% !important; /* was: ${DEFAULTS.hlW}% */\n`;
+    if(state.hlX!==DEFAULTS.hlX||state.hlY!==DEFAULTS.hlY) out += `    transform: translate(${state.hlX}px, ${state.hlY}px) !important;\n`;
+    out += `  }\n`;
+  }
+  if(state.hlS!==DEFAULTS.hlS){
+    out += `  .hero-headline-wrap img {\n    transform: scale(${(state.hlS/100).toFixed(2)}) !important;\n    transform-origin: center center !important;\n  }\n`;
+  }
+  if(state.tlW!==DEFAULTS.tlW||state.tlX!==DEFAULTS.tlX||state.tlY!==DEFAULTS.tlY||state.tlF!==DEFAULTS.tlF){
+    out += `  .hero-tagline-wrap {\n`;
+    if(state.tlW!==DEFAULTS.tlW) out += `    width: ${state.tlW}% !important; /* was: ${DEFAULTS.tlW}% */\n`;
+    if(state.tlX!==DEFAULTS.tlX||state.tlY!==DEFAULTS.tlY) out += `    transform: translate(${state.tlX}px, ${state.tlY}px) !important;\n`;
+    if(state.tlF!==DEFAULTS.tlF) out += `    font-size: ${state.tlF}rem !important; /* was: ${DEFAULTS.tlF}rem */\n`;
+    out += `  }\n`;
+  }
+  out += `}\n`;
+  document.getElementById('diffOut').textContent = out;
+  navigator.clipboard?.writeText(out).catch(()=>{});
+}
+
+// Read ACTUAL computed values from iframe — defaults reflect real state
+function readActualValues(){
+  const f = getIframes()[0]; if(!f) return false;
+  const d = f.contentDocument; if(!d) return false;
+  const hl = d.querySelector('.hero-headline-wrap');
+  const tl = d.querySelector('.hero-tagline-wrap');
+  const hlImg = hl ? hl.querySelector('img') : null;
+  if(!hl || !tl) return false;
+  const iw = f.contentWindow.innerWidth;
+  const hlCS = getComputedStyle(hl);
+  const tlCS = getComputedStyle(tl);
+  // width %: computed in px → convert via stage parent
+  const stage = d.querySelector('.svg-stage');
+  const stageW = stage ? stage.getBoundingClientRect().width : iw;
+  // Parse transform matrix
+  function parseT(s){
+    if(s==='none'||!s) return {x:0,y:0,scale:1};
+    const m = s.match(/matrix\(([^)]+)\)/);
+    if(m){const p = m[1].split(',').map(parseFloat); return {x:p[4]||0, y:p[5]||0, scale:p[0]||1};}
+    return {x:0,y:0,scale:1};
+  }
+  const hlT = parseT(hlCS.transform);
+  const tlT = parseT(tlCS.transform);
+  const hlImgT = hlImg ? parseT(getComputedStyle(hlImg).transform) : {scale:1};
+  const hlW_pct = (parseFloat(hlCS.width) / stageW * 100);
+  const tlW_pct = (parseFloat(tlCS.width) / stageW * 100);
+  const tlF_rem = parseFloat(tlCS.fontSize) / 16;
+  // Update DEFAULTS + state
+  Object.assign(DEFAULTS, {
+    hlW: Math.round(hlW_pct*10)/10,
+    hlX: Math.round(hlT.x),
+    hlY: Math.round(hlT.y),
+    hlS: Math.round(hlImgT.scale*100),
+    tlW: Math.round(tlW_pct*10)/10,
+    tlX: Math.round(tlT.x),
+    tlY: Math.round(tlT.y),
+    tlF: Math.round(tlF_rem*100)/100
+  });
+  Object.keys(DEFAULTS).forEach(k=>{ state[k] = DEFAULTS[k]; const el = document.getElementById(k); if(el) el.value = DEFAULTS[k]; });
+  document.querySelectorAll('.row .reset').forEach(b=>{
+    const txt = b.getAttribute('onclick'); if(!txt) return;
+    const m = txt.match(/rst\('(\w+)',\s*([\d.-]+)\)/);
+    if(m && DEFAULTS[m[1]]!==undefined) b.setAttribute('onclick', `rst('${m[1]}',${DEFAULTS[m[1]]})`);
+  });
+  document.getElementById('stat').textContent = `defaults synced from production: hlW=${DEFAULTS.hlW}%, hlX=${DEFAULTS.hlX}, hlS=${DEFAULTS.hlS}%, tlW=${DEFAULTS.tlW}%, tlX=${DEFAULTS.tlX}, tlF=${DEFAULTS.tlF}rem`;
+  return true;
+}
+
+document.querySelectorAll('iframe').forEach(f=>{ f.dataset.src = 'index.html'; f.src = 'index.html?ts='+Date.now(); f.addEventListener('load', ()=>setTimeout(()=>applyToFrame(f), 300)); });
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    const synced = readActualValues();
+    if(!synced){ setTimeout(()=>{ readActualValues(); loadState(); applyAll(); }, 1500); return; }
+    loadState(); // override with user's saved tuning if exists
+    applyAll();
+  }, 2000);
+});
+</script>
+</body></html>
