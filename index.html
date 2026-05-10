@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>מרכולית - חוויית כפרית</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;700&family=Suez+One&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -314,10 +314,10 @@
       overflow: hidden;
     }
 
-    /* Mask the smile icon + its label out of the benefits strip SVG (slot #3 of 4 at center 62.5%) */
+    /* Mask: cut smile + its label from strip — small ellipse, leaves neighbors intact */
     .benefits-strip-svg {
-      -webkit-mask-image: radial-gradient(ellipse 12.5% 50% at 62.5% 50%, transparent 0 99%, #000 100%);
-      mask-image: radial-gradient(ellipse 12.5% 50% at 62.5% 50%, transparent 0 99%, #000 100%);
+      -webkit-mask-image: radial-gradient(ellipse 8.5% 50% at 62.5% 50%, transparent 0 99%, #000 100%);
+      mask-image: radial-gradient(ellipse 8.5% 50% at 62.5% 50%, transparent 0 99%, #000 100%);
     }
     /* Replacement icon — placed at the smile slot, matches sibling icon dimensions */
     .club-icon-replace {
@@ -330,8 +330,8 @@
     .club-icon-replace + .club-label-replace {
       position: absolute;
       z-index: 6;
-      font-family: 'Heebo','Arial',sans-serif;
-      font-weight: 700;
+      font-family: 'Suez One','Heebo','Arial',serif;
+      font-weight: 400;
       color: #1A6147;
       text-align: center;
       line-height: 1.05;
