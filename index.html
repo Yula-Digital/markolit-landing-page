@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay) {
+    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal) {
       display: none !important;
     }
     /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
@@ -2050,6 +2050,190 @@
   }
   window.addEventListener('load', applyMobileFigures);
   window.addEventListener('resize', applyMobileFigures);
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     BRANCHES MODAL — opens on any [href="#branches"] click
+     Shows branch list (left) + map+nav (right). Mobile: stacked.
+     Branches data placeholder — update with real markolit branch info.
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .br-modal { display:none !important; position:fixed; inset:0; z-index:9999; }
+  .br-modal[data-open="true"] { display:block !important; }
+  .br-modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter: blur(2px); }
+  .br-modal-box {
+    position:absolute; inset:auto 0 0 0; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 980px); max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+    font-family:'Heebo','Arial',sans-serif;
+  }
+  .br-modal-header {
+    padding:18px 22px 10px; position:relative;
+    border-bottom:1px solid rgba(26,97,71,.12);
+  }
+  .br-modal-close {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .br-modal-close:hover { background:#f0e7d0; }
+  .br-modal-title {
+    margin:0; text-align:center; color:#1A6147; font-size:1.4rem; font-weight:900;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .br-modal-sub { margin:4px 0 0; text-align:center; color:#666; font-size:0.78rem; }
+  .br-modal-body {
+    display:grid; grid-template-columns:340px 1fr; gap:16px;
+    padding:14px 18px 18px; overflow:auto; flex:1;
+  }
+  .br-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; overflow:auto; }
+  .br-item {
+    background:#fff; border:1px solid #E2DBC8; border-radius:14px;
+    padding:14px 16px; cursor:pointer; position:relative;
+    transition: background .15s, border-color .15s;
+  }
+  .br-item:hover { background:#F5F0E3; }
+  .br-item.active { background:linear-gradient(180deg,#D7EAD9,#C7E1CA); border-color:#1A6147; }
+  .br-item-name { font-weight:800; color:#0F4E37; font-size:0.95rem; }
+  .br-item-phone { color:#1A6147; font-size:0.85rem; margin-top:2px; font-feature-settings:"tnum"; }
+  .br-item-area { color:#666; font-size:0.75rem; margin-top:2px; }
+  .br-item-arrow {
+    position:absolute; top:50%; left:14px; transform:translateY(-50%);
+    width:26px; height:26px; border-radius:50%;
+    background:#1A6147; color:#fff; font-size:14px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .br-item:not(.active) .br-item-arrow { background:#E2DBC8; color:#888; }
+  .br-detail { display:flex; flex-direction:column; gap:10px; min-width:0; }
+  .br-detail-head { display:flex; flex-direction:column; gap:4px; padding:0 4px; }
+  .br-detail-name { margin:0; color:#1A6147; font-size:1.6rem; font-weight:900; text-align:right; }
+  .br-detail-row { display:flex; gap:14px; color:#1A6147; font-size:0.85rem; align-items:center; justify-content:flex-end; }
+  .br-detail-row a { color:inherit; text-decoration:none; }
+  .br-map-wrap {
+    flex:1; min-height:240px; background:#F5F0E3; border-radius:14px; overflow:hidden;
+    border:1px dashed rgba(26,97,71,.25);
+  }
+  .br-map-wrap iframe { width:100%; height:100%; min-height:240px; border:0; display:block; }
+  .br-waze-btn {
+    background:#1A6147; color:#fff; padding:14px 18px; border-radius:12px;
+    text-align:center; text-decoration:none; font-weight:800; font-size:1rem;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition: background .15s;
+  }
+  .br-waze-btn:hover { background:#0F4E37; }
+  .br-waze-btn::before { content:'➤'; transform:rotate(180deg); }
+
+  @media (max-width: 720px) {
+    .br-modal-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .br-modal-body { grid-template-columns:1fr; gap:10px; padding:10px 12px 14px; }
+    .br-modal-title { font-size:1.15rem; }
+    .br-list { max-height:38vh; flex-direction:row; overflow-x:auto; padding-bottom:4px; }
+    .br-item { min-width:200px; }
+    .br-item-arrow { display:none; }
+    .br-detail-name { font-size:1.25rem; }
+    .br-map-wrap { min-height:200px; }
+    .br-map-wrap iframe { min-height:200px; }
+  }
+</style>
+
+<div class="br-modal" id="branches-modal" role="dialog" aria-modal="true" aria-labelledby="br-modal-title">
+  <div class="br-modal-backdrop" onclick="MarkBranchesModal.close()"></div>
+  <div class="br-modal-box">
+    <header class="br-modal-header">
+      <button class="br-modal-close" onclick="MarkBranchesModal.close()" aria-label="סגור">×</button>
+      <h2 class="br-modal-title" id="br-modal-title">📍 הסניפים שלנו</h2>
+      <p class="br-modal-sub">בחרו סניף לצפייה במפה ולניווט</p>
+    </header>
+    <div class="br-modal-body">
+      <ul class="br-list" id="br-list" role="listbox" aria-label="רשימת סניפים"></ul>
+      <section class="br-detail">
+        <div class="br-detail-head">
+          <h3 class="br-detail-name" id="br-name"></h3>
+          <div class="br-detail-row">
+            <span id="br-area"></span>
+            <a id="br-phone-link" href="#"></a>
+          </div>
+        </div>
+        <div class="br-map-wrap">
+          <iframe id="br-map" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="מפת סניף"></iframe>
+        </div>
+        <a id="br-waze" class="br-waze-btn" target="_blank" rel="noopener">נווט עם Waze</a>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // PLACEHOLDER DATA — replace with real markolit branches
+  const BRANCHES = [
+    { id:'raanana',  name:'רעננה',      phone:'09-7740001', area:'מרכז רעננה',     address:'אחוזה 100, רעננה' },
+    { id:'kfarsaba', name:'כפר סבא',     phone:'09-7651234', area:'מרכז כפר סבא',   address:'ויצמן 50, כפר סבא' },
+    { id:'hod',      name:'הוד השרון',   phone:'09-7401234', area:'הוד השרון',      address:'דרך רמתיים 25, הוד השרון' },
+    { id:'tira',     name:'טירה',       phone:'09-8884428', area:'טירה',          address:'הרחוב הראשי, טירה' },
+    { id:'natanya',  name:'נתניה',      phone:'04-8616530', area:'דרום נתניה',     address:'הרצל 60, נתניה' },
+  ];
+  let active = BRANCHES[0].id;
+  const $ = id => document.getElementById(id);
+
+  function renderList(){
+    $('br-list').innerHTML = BRANCHES.map(b => `
+      <li class="br-item${b.id===active?' active':''}" role="option" aria-selected="${b.id===active}" tabindex="0" data-id="${b.id}">
+        <div class="br-item-name">${b.name}</div>
+        <div class="br-item-phone">${b.phone}</div>
+        <div class="br-item-area">${b.area}</div>
+        <span class="br-item-arrow">›</span>
+      </li>
+    `).join('');
+  }
+
+  function paintDetail(){
+    const b = BRANCHES.find(x => x.id===active); if(!b) return;
+    $('br-name').textContent = b.name;
+    $('br-area').textContent = b.address;
+    const phoneLink = $('br-phone-link');
+    phoneLink.textContent = '☎ ' + b.phone;
+    phoneLink.href = 'tel:' + b.phone.replace(/[^0-9+]/g,'');
+    const q = encodeURIComponent(b.address);
+    $('br-map').src = `https://maps.google.com/maps?q=${q}&hl=he&z=14&output=embed`;
+    $('br-waze').href = `https://waze.com/ul?q=${q}&navigate=yes`;
+  }
+
+  function select(id){ active = id; renderList(); paintDetail(); }
+  function open(){
+    renderList(); paintDetail();
+    $('branches-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>{ const a = document.querySelector('.br-item.active'); if(a) a.focus(); }, 50);
+  }
+  function close(){
+    $('branches-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+    $('br-map').src = 'about:blank'; // free iframe
+  }
+
+  // Event delegation: list clicks + keyboard
+  $('br-list').addEventListener('click', e => {
+    const li = e.target.closest('.br-item'); if(!li) return;
+    select(li.dataset.id);
+  });
+  $('br-list').addEventListener('keydown', e => {
+    if(e.key!=='Enter' && e.key!==' ') return;
+    const li = e.target.closest('.br-item'); if(!li) return;
+    e.preventDefault(); select(li.dataset.id);
+  });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
+
+  // Wire up all branches triggers (any href="#branches" or aria-label)
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href="#branches"], a[aria-label="סניפים"]');
+    if(a){ e.preventDefault(); open(); }
+  });
+
+  window.MarkBranchesModal = { open, close, select };
+})();
 </script>
 
 </body>
