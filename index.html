@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal) {
+    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal) {
       display: none !important;
     }
     /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
@@ -2243,6 +2243,236 @@
   }, true); // capture phase — beats inline onclick="closeNav()"
 
   window.MarkBranchesModal = { open, close, select };
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PRIVACY POLICY MODAL — opens on any "מדיניות פרטיות" link
+     Source: PDF (10 May 2026), 16 sections, Rubik font
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .pp-modal { display:none !important; position:fixed; inset:0; z-index:9999; font-family:'Rubik','Heebo','Arial',sans-serif; }
+  .pp-modal[data-open="true"] { display:block !important; }
+  .pp-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px); }
+  .pp-box {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 760px); max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+  }
+  .pp-header {
+    padding:20px 22px 14px; position:relative; text-align:center;
+    border-bottom:1px solid rgba(26,97,71,.12); flex-shrink:0;
+  }
+  .pp-close-x {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pp-close-x:hover { background:#f0e7d0; }
+  .pp-title {
+    margin:0; color:#1A6147; font-size:1.45rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .pp-title-icon {
+    width:24px; height:24px; flex-shrink:0;
+    fill:none; stroke:#1A6147; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .pp-sub { margin:6px 0 0; color:#666; font-size:0.78rem; font-weight:400; }
+  .pp-body {
+    flex:1; overflow-y:auto; padding:18px 26px 18px; min-height:0;
+    background:#F0EBD8; margin:14px 18px 0; border-radius:14px;
+    border:1px solid rgba(26,97,71,.12);
+  }
+  .pp-body p { margin:0 0 10px; color:#2c2c2c; font-size:0.88rem; line-height:1.7; font-weight:400; }
+  .pp-body p.pp-lead { font-weight:500; color:#1A6147; margin-bottom:14px; }
+  .pp-body h3 { color:#1A6147; font-size:1rem; font-weight:700; margin:18px 0 8px; line-height:1.3; }
+  .pp-body h3:first-child { margin-top:0; }
+  .pp-body ul { padding-inline-start:22px; margin:0 0 12px; }
+  .pp-body ul li { margin:0 0 6px; color:#2c2c2c; font-size:0.88rem; line-height:1.65; }
+  .pp-body strong { color:#1A6147; font-weight:600; }
+  .pp-body a { color:#1A6147; text-decoration:underline; }
+  footer.pp-footer, .pp-footer {
+    padding:14px 22px 18px; flex-shrink:0;
+    display:flex; flex-direction:column; gap:10px; align-items:center;
+    border-top:1px solid rgba(26,97,71,.12);
+    background:transparent; color:#2c2c2c;
+    font-size:inherit; text-align:center;
+  }
+  .pp-disclaimer { margin:0; color:#666; font-size:0.78rem; text-align:center; line-height:1.5; }
+  .pp-close-btn {
+    background:#1A6147; color:#fff; border:0; padding:10px 44px; border-radius:10px;
+    font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer;
+    transition:background .15s; min-width:150px;
+  }
+  .pp-close-btn:hover { background:#0F4E37; }
+
+  @media (max-width: 720px) {
+    .pp-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .pp-title { font-size:1.15rem; }
+    .pp-body { margin:10px 12px 0; padding:14px 16px; font-size:0.85rem; }
+    .pp-body h3 { font-size:0.95rem; margin:14px 0 6px; }
+    .pp-body p, .pp-body ul li { font-size:0.85rem; line-height:1.65; }
+    .pp-footer { padding:12px 16px 14px; }
+    .pp-close-btn { padding:9px 36px; font-size:0.9rem; min-width:130px; }
+    .pp-close-x { top:10px; left:10px; width:30px; height:30px; font-size:20px; }
+  }
+</style>
+
+<div class="pp-modal" id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="pp-title">
+  <div class="pp-backdrop" onclick="MarkPrivacyModal.close()"></div>
+  <div class="pp-box">
+    <header class="pp-header">
+      <button class="pp-close-x" onclick="MarkPrivacyModal.close()" aria-label="סגור">×</button>
+      <h2 class="pp-title" id="pp-title">
+        <svg class="pp-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z"/>
+        </svg>
+        מדיניות פרטיות
+      </h2>
+      <p class="pp-sub">עודכן לאחרונה: 10 במאי 2026</p>
+    </header>
+    <div class="pp-body" tabindex="0">
+      <p class="pp-lead">סופר תלם אגודה שיתופית חקלאית בע״מ, מספר תאגיד 570067041, שכתובתה בקיבוץ תל יצחק (להלן: "החברה"), הינה בעלת השליטה במאגרי המידע כהגדרת מונח זה בחוק הגנת הפרטיות, ככל שמאגרים כאמור מנוהלים על ידה.</p>
+      <p>מדיניות זו מנוסחת בהתאם להוראות חוק הגנת הפרטיות, לרבות תיקון מס׳ 13, תקנות הגנת הפרטיות (אבטחת מידע), התשע״ז–2017, וחוק התקשורת (בזק ושידורים), התשמ״ב–1982, ככל שהם חלים על פעילות החברה.</p>
+
+      <h3>1. כללי וזהות בעל השליטה במאגר</h3>
+      <p>החברה מכבדת את פרטיות המשתמשים באתרי האינטרנט, בשירותים הדיגיטליים, בטפסי יצירת קשר, במועדוני לקוחות ובכל שירות אחר המופעל על ידה או עבורה.</p>
+
+      <h3>2. בסיס חוקי לעיבוד מידע</h3>
+      <p>החברה מעבדת מידע אישי על בסיס אחד או יותר מהבאים:</p>
+      <ul>
+        <li>עיבוד הנדרש לצורך מתן שירותים, ניהול התקשרות או מענה לפנייה.</li>
+        <li>עמידה בחובה חוקית החלה על החברה.</li>
+        <li>אינטרס לגיטימי של החברה, בכפוף לאיזון עם זכויות נושא המידע.</li>
+        <li>הסכמה מפורשת של נושא המידע, מקום שבו נדרשת הסכמה לפי דין.</li>
+      </ul>
+      <p>השימוש באתר או בשירות כשלעצמו אינו מהווה הסכמה כללית לעיבוד מידע מעבר לנדרש להפעלתו או למטרה שלשמה נמסר המידע.</p>
+
+      <h3>3. סוגי מידע שנאסף</h3>
+      <p>החברה עשויה לעבד את סוגי המידע הבאים:</p>
+      <ul>
+        <li>מידע שנמסר ישירות על ידי המשתמש, לרבות שם פרטי, שם משפחה, כתובת דוא״ל, מספר טלפון, תוכן פנייה, פרטים הנמסרים במסגרת טפסי יצירת קשר, הצטרפות למועדון לקוחות או קבלת שירות.</li>
+        <li>מידע תפעולי הנדרש לניהול שירותים, פניות, הטבות, מועדון לקוחות או התקשרויות עם לקוחות וספקים.</li>
+        <li>מידע טכני, לרבות כתובת IP, סוג דפדפן, זמני גישה, דפים נצפים, נתוני אבטחה ולוגים.</li>
+        <li>מידע הנאסף באמצעות עוגיות (Cookies), ככל שנעשה בהן שימוש.</li>
+        <li>מידע מספקי שירות חיצוניים, ככל שהדבר נדרש לצורך מתן השירותים או תפעול מערכות החברה.</li>
+      </ul>
+      <p>החברה אינה אוספת ביודעין מידע בעל רגישות מיוחדת כהגדרתו בחוק, אלא אם הדבר נמסר ביוזמת נושא המידע או נדרש לפי דין או לצורך מתן שירות מסוים.</p>
+
+      <h3>4. מטרות עיבוד המידע</h3>
+      <ul>
+        <li>מתן שירותים וטיפול בפניות.</li>
+        <li>ניהול ותפעול האתר, השירותים הדיגיטליים ומועדון הלקוחות, ככל שקיים.</li>
+        <li>שיפור חוויית המשתמש, השירותים והמערכות.</li>
+        <li>ניתוח סטטיסטי פנימי, ככל האפשר באופן שאינו מזהה.</li>
+        <li>שיווק, דיוור ושליחת הודעות פרסומיות או שירותיות — בכפוף להסכמה מפורשת כאשר נדרשת הסכמה לפי דין.</li>
+        <li>עמידה בדרישות הדין, ניהול הליכים, מניעת הונאות והגנה על זכויות החברה.</li>
+      </ul>
+
+      <h3>5. עוגיות (Cookies)</h3>
+      <p>האתר עשוי לעשות שימוש בעוגיות חיוניות הנדרשות להפעלתו התקינה, אבטחתו ושיפור חוויית השימוש. עוגיות שאינן חיוניות, לרבות עוגיות מדידה, סטטיסטיקה או שיווק, יופעלו רק בהתאם להוראות הדין ולאחר קבלת הסכמה מפורשת, ככל שנדרשת הסכמה כאמור.</p>
+
+      <h3>6. עיבוד אוטומטי ובינה מלאכותית</h3>
+      <p>החברה עשויה לעשות שימוש בכלים אוטומטיים לצורכי תפעול, אבטחה, ניתוח ושיפור השירות.</p>
+      <p>לא מתקבלות החלטות בעלות השלכות משפטיות או כלכליות מהותיות על אדם אך ורק על בסיס עיבוד אוטומטי, אלא אם הדבר הותר לפי דין ונמסרה הודעה מתאימה.</p>
+
+      <h3>7. אבטחת מידע</h3>
+      <p>החברה מיישמת אמצעי אבטחת מידע בהתאם לתקנות הגנת הפרטיות (אבטחת מידע), ברמת אבטחה התואמת את מאפייני המאגר, סוג המידע, היקפו והסיכונים הכרוכים בעיבודו.</p>
+      <p>מידע עשוי להיות מאוחסן ומעובד על גבי מערכות, שרתים וספקי שירות טכנולוגיים המשמשים כמחזיקי מידע מטעם החברה, וזאת בכפוף להתחייבויות מתאימות לשמירת סודיות ואבטחת מידע.</p>
+      <p>במקרה של אירוע אבטחה חמור, תפעל החברה בהתאם לחובות הדיווח והטיפול הקבועות בדין.</p>
+
+      <h3>8. העברת מידע לצדדים שלישיים</h3>
+      <p><strong>החברה אינה מוכרת מידע אישי.</strong></p>
+      <p>מידע אישי יועבר לצדדים שלישיים רק במקרים הבאים:</p>
+      <ul>
+        <li>בהסכמת נושא המידע.</li>
+        <li>לצורך קבלת שירותים תפעוליים, כגון אחסון, תחזוקה, מערכות מידע, דיוור, שירותי סליקה או תמיכה, ככל שרלוונטי.</li>
+        <li>על פי חובה חוקית, דרישת רשות מוסמכת או צו שיפוטי.</li>
+        <li>לצורך הגנה על זכויות החברה, לקוחותיה או צדדים שלישיים.</li>
+        <li>במסגרת שינוי מבני, מיזוג, העברת פעילות או העברת נכסים, בכפוף לדין.</li>
+      </ul>
+
+      <h3>9. העברת מידע מחוץ לישראל</h3>
+      <p>ככל שמידע יועבר מחוץ לישראל, הדבר ייעשה בהתאם לדין, על בסיס החלטת התאמה, התחייבויות חוזיות מתאימות, הוראות דין רלוונטיות או הסכמה מפורשת של נושא המידע, לפי העניין.</p>
+
+      <h3>10. שמירת מידע</h3>
+      <p>המידע יישמר לפרקי זמן מידתיים בהתאם למטרות שלשמן נאסף, להוראות הדין ולצרכים תפעוליים ומשפטיים של החברה:</p>
+      <ul>
+        <li>פרטי התקשרות ופניות — למשך התקופה הדרושה לטיפול בפנייה ולתיעוד סביר, או לפי דין.</li>
+        <li>נתוני שימוש באתר — עד 12 חודשים, אלא אם נדרש אחרת מטעמי אבטחה, תיעוד או דין.</li>
+        <li>מידע שיווקי — עד לביטול ההסכמה או בהתאם להוראות הדין.</li>
+        <li>מידע הנדרש לצורך עמידה בחובות חוקיות, חשבונאיות או משפטיות — למשך התקופה הנדרשת לפי דין.</li>
+      </ul>
+      <p>בתום תקופת השמירה, המידע יימחק או יעבור אנונימיזציה, ככל שהדבר אפשרי וסביר בנסיבות העניין. למעט פרטים בסיסיים של החברות במועדון כגון שם וטלפון ולעיתים כתובת מייל.</p>
+
+      <h3>11. זכויות נושאי מידע</h3>
+      <p>לנושאי המידע עומדות הזכויות הקבועות בדין, לרבות:</p>
+      <ul>
+        <li>זכות עיון במידע.</li>
+        <li>זכות לבקש תיקון מידע שאינו נכון, שלם, ברור או מעודכן.</li>
+        <li>זכות לבקש מחיקה, בכפוף להוראות הדין ולצרכים לגיטימיים של החברה.</li>
+        <li>זכות להתנגד לעיבוד מסוים, ככל שקיימת זכות כזו לפי דין.</li>
+        <li>זכות לבטל הסכמה לקבלת דיוור שיווקי בכל עת, כאשר העיבוד מבוסס על הסכמה.</li>
+      </ul>
+      <p>בקשות בנושא זכויות נושאי מידע ניתן להפנות לאיש הקשר לפניות בנושא פרטיות המפורט בסעיף 12 להלן. החברה תשיב לפנייה בתוך 30 ימים, בכפוף לאימות זהות ולמגבלות הדין.</p>
+
+      <h3>12. איש קשר לפניות בנושא פרטיות</h3>
+      <p>החברה מינתה איש קשר לפניות בנושא פרטיות:</p>
+      <ul>
+        <li><strong>שם:</strong> טובה</li>
+        <li><strong>טלפון:</strong> <a href="tel:0733161538">073-3161538</a></li>
+        <li><strong>Email:</strong> <a href="mailto:tova@markolitly.co.il">tova@markolitly.co.il</a></li>
+        <li><strong>כתובת למשלוח דואר:</strong> סופר תלם אגודה שיתופית חקלאית בע״מ, קיבוץ תל יצחק.</li>
+      </ul>
+
+      <h3>13. פרטיות קטינים</h3>
+      <p>השירותים אינם מיועדים לאיסוף מידע מקטינים ללא אישור הורה או אפוטרופוס חוקי. ככל שיימסר מידע על קטין, הדבר ייעשה רק באישור אפוטרופוס חוקי ובהתאם לדין.</p>
+
+      <h3>14. חובת הודעה לרשות להגנת הפרטיות</h3>
+      <p>ככל שהחברה תחזיק או תעבד מאגר מידע החייב בהודעה לרשות להגנת הפרטיות לפי תיקון מס׳ 13 לחוק, תימסר הודעה כאמור בהתאם לדרישות הדין.</p>
+
+      <h3>15. שינויים במדיניות</h3>
+      <p>החברה רשאית לעדכן מדיניות זו מעת לעת. שינויים מהותיים במדיניות יפורסמו באתר או באמצעי אחר לפי שיקול דעת החברה ובהתאם לדין. מועד העדכון האחרון יופיע בראש המדיניות.</p>
+
+      <h3>16. יצירת קשר</h3>
+      <p>לשאלות, בקשות או פניות בנושא פרטיות, ניתן לפנות לאיש הקשר המפורט בסעיף 12 לעיל.</p>
+    </div>
+    <footer class="pp-footer">
+      <p class="pp-disclaimer">בשימושך באתר ובשירותים של מרכולית, אתה מסכים למדיניות הפרטיות.</p>
+      <button class="pp-close-btn" onclick="MarkPrivacyModal.close()">סגור</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  function open(){
+    $('privacy-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>{ const b=document.querySelector('.pp-body'); if(b) b.focus(); }, 50);
+  }
+  function close(){
+    $('privacy-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape' && $('privacy-modal').getAttribute('data-open')==='true') close();
+  });
+  // Wire up all privacy triggers — match by href, aria-label, or visible text
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#privacy' || aria.includes('מדיניות פרטיות') || txt.includes('מדיניות פרטיות')){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true);
+  window.MarkPrivacyModal = { open, close };
 })();
 </script>
 
