@@ -2733,7 +2733,7 @@
     const href = a.getAttribute('href') || '';
     const aria = a.getAttribute('aria-label') || '';
     const txt = (a.textContent || '').trim();
-    if(href==='#jobs' || aria==='דרושים' || txt==='דרושים'){
+    if(href==='#jobs' || aria==='דרושים' || aria==='בואו לעבוד אצלנו' || txt==='דרושים' || txt==='בואו לעבוד אצלנו'){
       e.preventDefault(); e.stopPropagation(); open();
     }
   }, true);
