@@ -1321,22 +1321,17 @@
       }
     }
 
-    /* Hero mobile tuner export — 2026-05-10 */
-    @media (max-width: 599px) {
-      .hero-headline-wrap {
-        width: 56.5% !important;
-        transform: translate(6px, 0px) !important;
-      }
-      .hero-headline-wrap img {
-        transform: scale(0.76) !important;
-        transform-origin: center center !important;
-      }
+    /* Hero (≤420px) — headline + tagline width */
+    @media (max-width: 420px) {
+      .hero-headline-wrap,
       .hero-tagline-wrap {
-        width: 83.5% !important;
-        transform: translate(-24px, -12px) !important;
-        font-size: 0.74rem !important;
+        width: min(62%, calc(385 / 648 * var(--stage))) !important;
       }
     }
+
+    /* Hero shifts (transform) */
+    .hero-headline-wrap { transform: translate(0, 0) !important; }
+    .hero-tagline-wrap  { transform: translate(2px, 0) !important; }
 
     /* Hero main photo */
     .hero-main-photo {
