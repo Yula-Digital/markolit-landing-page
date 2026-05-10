@@ -2226,11 +2226,17 @@
   });
   document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
 
-  // Wire up all branches triggers (any href="#branches" or aria-label)
+  // Wire up all branches triggers — match by href, aria-label, or visible text
   document.addEventListener('click', e => {
-    const a = e.target.closest('a[href="#branches"], a[aria-label="סניפים"]');
-    if(a){ e.preventDefault(); open(); }
-  });
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#branches' || aria==='סניפים' || txt==='סניפים'){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true); // capture phase — beats inline onclick="closeNav()"
 
   window.MarkBranchesModal = { open, close, select };
 })();
