@@ -1,5 +1,15 @@
 # הוראות פריסה אוטומטית — דף הנחיתה של מרכולית אל markolitly.co.il
-### מסמך הנחיה לסוכן Cowork · גרסה 1.0
+### מסמך הנחיה לסוכן Cowork · גרסה 1.1
+
+---
+
+## ✅ סטטוס ביצוע (עודכן 2026-06-10)
+
+**גיבוי התחלתי בוצע — הכל שמור ברימוט:**
+- **ריפו דף הנחיתה** — commit `0da64c7` נדחף ל-`main` (כולל `production_deploy/`, ה-workflow, ה-.htaccess, המסמך הזה וכל ה-assets). ⚠️ הריפו **עבר** ל-`Yula-Digital/markolit-landing-page` (ה-remote עודכן בהתאם).
+- **ריפו שלישוק/מבצעים** (`rordan-ai/rordan-ai.github.io`) — ה-WIP גובה ל-branch‏ `backup/pre-domain-move-2026-06-10` (commit `7971682`). **main לא נגעו בו** כדי לא להפעיל deploy חי ב-GitHub Pages. גיבויי ה-DB המקומיים (`setup/backups/`, ~22MB) נשארו מקומיים בכוונה.
+
+**מה שעדיין פתוח (ראה רשימת המשימות בסעיף 0.1):** פרטי FTP, הגדרת Secrets, הרצת הפריסה הראשונה ואימות — אלה המשימות שלך.
 
 ---
 
@@ -8,7 +18,7 @@
 אתה עומד להפעיל **פריסה אוטומטית** של דף הנחיתה של "מרכולית" אל הדומיין `markolitly.co.il`.
 
 **מה זה הפרויקט:**
-- ריפו GitHub: `rordan-ai/markolit-landing-page`.
+- ריפו GitHub: `Yula-Digital/markolit-landing-page` (לשעבר `rordan-ai/markolit-landing-page` — עבר מיקום).
 - **דף הנחיתה** הוא אתר **סטטי** — קובץ `index.html` יחיד + תמונות. אין build, אין Node, אין framework. מה שיש בתיקייה זה מה שעולה לשרת.
 - הקבצים המוכנים לייצור נמצאים בתיקייה **`production_deploy/`** (index.html + assets + .htaccess). **רק התיקייה הזו נפרסת.**
 
@@ -27,6 +37,36 @@
 **שיטת הפריסה שנבחרה:** GitHub Actions → **FTPS** אל Plesk. כל push ל-`main` שנוגע ב-`production_deploy/` מסנכרן אוטומטית לשרת. הקבצים הדרושים כבר קיימים בריפו (ראה סעיף 2).
 
 **מטרת המשימה:** להפעיל את הצינור הזה מקצה לקצה ולאמת שהדף עולה תקין על `https://markolitly.co.il`.
+
+---
+
+## 0.1 ★ רשימת משימות מרוכזת לסוכן Cowork ★
+*(כל ההסתייגויות וההערות הפכו כאן למשימות מפורשות. בצע לפי הסדר. כל פרט מורחב בסעיפים שבהמשך.)*
+
+### א. הקמת הפריסה של דף הנחיתה
+- [ ] **M1.** השג מהמשתמש את פרטי ה-FTP מ-Plesk (host, user, password) — סעיף 3.
+- [ ] **M2.** הגדר 3 Secrets בריפו **`Yula-Digital/markolit-landing-page`** (לא rordan-ai!): `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD` — סעיף 4.
+- [ ] **M3.** הפעל את ה-workflow (`workflow_dispatch` בטאב Actions, או push קטן). הקוד כבר ב-main — אין צורך ב-commit ראשוני.
+- [ ] **M4.** ודא שה-workflow הסתיים בירוק. אם נכשל על "אימות Secrets" → חזור ל-M2.
+
+### ב. אימות (חובה — אל תסמן "בוצע" בלי זה)
+- [ ] **M5.** טען `https://markolitly.co.il` — דף הנחיתה מופיע, התמונות נטענות, HTTPS נכפה. צ'קליסט מלא בסעיף 6.
+- [ ] **M6.** אם תמונות שבורות → תקן את `server-dir` ב-`deploy-plesk.yml` (`./httpdocs/` ↔ `./`) לפי מה שראית ב-File Manager — סעיף 6.
+- [ ] **M7.** ודא ש-"שלישוק במרכולית" / "מועדון" פותחים את ה-short-links כרגיל.
+
+### ג. תקופת מעבר / דומיין כפול
+- [ ] **M8.** השאר את ה-deploy ב-**Vercel חי** עד אימות מלא של הדף החדש (אל תכבה).
+- [ ] **M9.** אם נדרש redirect מהדומיין הישן — הפעל את התבנית המוערת בסוף `production_deploy/.htaccess` (החלף `OLD-DOMAIN`, 302).
+- [ ] **M10.** עדכן את ה-short-links (`l5k.me/avn6C`, `lp6.me/w0plE`) ליעד הסופי בעת הצורך.
+- [ ] **M11.** **תזכורת ידנית:** ב-Plesk/Apache אין פקיעת redirect אוטומטית — בתאריך היעד הסר ידנית את שורות ה-RewriteRule מ-`.htaccess` (או הסר את הדומיין הישן). תזמן תזכורת.
+- [ ] **M12.** רק אחרי שהכל אומת — כבה/הסר את ה-deploy הישן ב-Vercel.
+
+### ד. גבולות גזרה (אסור!)
+- [ ] **G1.** ❌ אל תיגע בתיקיית `SHLISHUK/` ובפריסת GitHub Pages שלה. גיבוי שלה = סעיף 9 בלבד.
+- [ ] **G2.** ❌ אל תשנה רשומות DNS.
+- [ ] **G3.** ❌ אל תמחק קבצים ב-`httpdocs/` לפני שראית מה קיים שם.
+- [ ] **G4.** ❌ אל תוסיף `dangerous-clean-slate` ל-workflow בריצה הראשונה.
+- [ ] **G5.** ❌ אל תדחוף שינויי שלישוק ל-`main` של `rordan-ai.github.io` — זה מפעיל deploy חי. גיבוי תמיד ל-branch (סעיף 9).
 
 ---
 
@@ -85,7 +125,7 @@ markolit-landing-page/                ← שורש הריפו
 
 ## 4. הגדרת Secrets ב-GitHub (פעולה של המשתמש, אתה מנחה)
 
-ב-`github.com/rordan-ai/markolit-landing-page` → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**. הוסף שלושה:
+ב-`github.com/Yula-Digital/markolit-landing-page` → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**. הוסף שלושה:
 
 | שם ה-Secret | ערך |
 |---|---|
@@ -95,9 +135,9 @@ markolit-landing-page/                ← שורש הריפו
 
 > ⚠️ אם הסוכן יכול לגשת ל-GitHub עם `gh` CLI ובהרשאה מתאימה, אפשר להגדיר כך:
 > ```
-> gh secret set FTP_SERVER   --repo rordan-ai/markolit-landing-page --body "<host>"
-> gh secret set FTP_USERNAME --repo rordan-ai/markolit-landing-page --body "<user>"
-> gh secret set FTP_PASSWORD --repo rordan-ai/markolit-landing-page --body "<pass>"
+> gh secret set FTP_SERVER   --repo Yula-Digital/markolit-landing-page --body "<host>"
+> gh secret set FTP_USERNAME --repo Yula-Digital/markolit-landing-page --body "<user>"
+> gh secret set FTP_PASSWORD --repo Yula-Digital/markolit-landing-page --body "<pass>"
 > ```
 > אחרת — הנחה את המשתמש לעשות זאת ידנית דרך ה-UI.
 
@@ -105,14 +145,11 @@ markolit-landing-page/                ← שורש הריפו
 
 ## 5. הפעלה ראשונה — צעד אחר צעד
 
-1. **ודא ש-`production_deploy/` ו-`.github/workflows/deploy-plesk.yml` נמצאים תחת git** (בסטטוס ההתחלתי הם היו untracked):
-   ```
-   git add production_deploy .github/workflows/deploy-plesk.yml COWORK_DEPLOY_INSTRUCTIONS.md
-   git commit -m "Add Plesk auto-deploy for landing page (production_deploy → markolitly.co.il)"
-   git push origin main
-   ```
-2. ה-push יפעיל אוטומטית את ה-workflow. עקוב ב-**Actions** בריפו (או `gh run watch`).
-3. אם ה-workflow נכשל ב"אימות Secrets" — ה-Secrets לא הוגדרו (סעיף 4). הגדר והרץ מחדש (`workflow_dispatch` או push חוזר).
+> ✅ **כבר בוצע:** הקבצים (`production_deploy/`, ה-workflow, ה-.htaccess, המסמך) כבר עברו commit ו-push ל-`main` (commit `0da64c7`). **אינך צריך לעשות commit ראשוני.** לכן:
+
+1. הגדר את ה-Secrets (סעיף 4) — בלעדיהם ה-workflow ייכשל בכוונה עם הודעה ברורה.
+2. הפעל את ה-workflow: טאב **Actions** → "Deploy landing page to Plesk" → **Run workflow** (`workflow_dispatch`). לחלופין כל push קטן ל-`main` שנוגע ב-`production_deploy/` יפעיל אותו.
+3. עקוב ב-**Actions** (או `gh run watch`). אם נכשל ב"אימות Secrets" — חזור לשלב 1.
 
 ---
 
@@ -149,6 +186,40 @@ markolit-landing-page/                ← שורש הריפו
 - ❌ אל תמחק קבצים קיימים ב-`httpdocs/` לפני שראית מה יש שם (ייתכן אתר/דף קיים).
 - ❌ אל תוסיף `dangerous-clean-slate` ל-workflow בריצה הראשונה.
 - ❌ אל תכבה את Vercel עד שאומת שהדף החדש תקין במלואו.
+
+---
+
+## 9. גיבוי נפרד לשלישוק / מבצעים (ריפו אחר!)
+
+**חשוב:** שלישוק ("מבצעים") הוא **ריפו git נפרד לחלוטין** מדף הנחיתה — גם אם בעתיד הכל ישב על אותו דומיין. הגיבוי שלו נעשה בנפרד, ולעולם **לא** דרך ריפו דף הנחיתה.
+
+| פרט | ערך |
+|---|---|
+| מיקום מקומי | `SHLISHUK/` (gitignored בריפו דף הנחיתה) |
+| Remote | `github.com/rordan-ai/rordan-ai.github.io` |
+| ענף ייצור | `main` — **push אליו מפעיל deploy חי ל-GitHub Pages** |
+| טכנולוגיה | React/Vite + Supabase (`npm run build`) |
+
+### ✅ מה כבר בוצע
+ה-WIP (שינויים ב-`src/App.tsx`, `src/draftStorage.ts`, `.gitignore`) גובה לענף **`backup/pre-domain-move-2026-06-10`** (commit `7971682`). main לא נגעו בו. גיבויי DB מקומיים (`setup/backups/`, ~22MB) נשארו מקומיים בכוונה (ה-`.gitignore` של שלישוק חוסם את ה-`*-full.json`).
+
+### איך לבצע גיבוי שלישוק בעתיד (נוסחה קבועה — בלי deploy בטעות)
+```bash
+cd SHLISHUK
+# גבה תמיד לענף, לעולם לא ל-main:
+git checkout -b backup/<תאריך>
+git add -A -- . ':!setup/backups'        # אל תכלול גיבויי DB כבדים
+git commit -m "Backup shlishuk WIP <תאריך>"
+git push -u origin backup/<תאריך>
+# החזר את עץ העבודה למצב המקורי (main + WIP לא-מקומיט):
+git checkout main
+git checkout backup/<תאריך> -- .          # מחזיר את ה-WIP לעץ העבודה
+git reset -q HEAD .                        # משאיר אותו לא-staged כמו שהיה
+```
+
+> **למה ענף ולא main?** דחיפה ל-`main` של `rordan-ai.github.io` מפעילה את `pages-public.yml` ופורסת את שלישוק חי ללקוחות. ענף גיבוי שומר הכל ברימוט **בלי** להפעיל deploy.
+
+> **פריסה חיה של שלישוק (כשבאמת רוצים):** רק אז עושים merge/‏push ל-`main`, והבנייה רצה אוטומטית. דורש שה-Secrets `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` מוגדרים בריפו של שלישוק.
 
 ---
 
