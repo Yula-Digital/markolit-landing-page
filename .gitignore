@@ -9,6 +9,10 @@ SHLISHUK/
 skilles/
 main_landing_page/
 
+# Local agent / tooling (machine-specific — not project deliverables)
+.claude/
+.playwright-mcp/
+
 # Test artifacts
 playwright-*.png
 pw-*.png
@@ -22,3 +26,5 @@ assets/jobs-team-v2.png
 # OS
 Thumbs.db
 .DS_Store
+
+.vercel

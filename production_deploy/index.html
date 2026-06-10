@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מרכולית - חוויית כפרית</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;700&family=Suez+One&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #F5F0E3;
+      --cream-card: #EDE6D2;
+      --green:      #1A6147;
+      --green-mid:  #2A7A57;
+      --green-lite: #3D9B6E;
+      --border:     #C8BFA8;
+      --text:       #1C1C1C;
+      --text-mid:   #666660;
+      --radius-card: 20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Heebo', 'Arial', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      direction: rtl;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal):not(.jb-modal) {
+      display: none !important;
+    }
+    /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
+    .navbar { display: none !important; }
+    .navbar-socials { display: none; }
+    /* Mask the base-art PNG nav strip portion only — replaced by main-menu-strip-v2.svg layered on top */
+    .svg-slice[data-y="0"]::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 17.6%;
+      background: var(--cream);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .exact-svg-page {
+      min-height: 100vh;
+      display: grid;
+      place-items: start center;
+      background: #f7f3ea;
+    }
+
+    .svg-stage {
+      --stage: min(100vw, 720px);
+      --section-card-btn-target: 16rem;
+      --deals-figure-scale: 0.85;
+      width: var(--stage);
+      background: #f7f3ea;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    @media (min-width: 721px) {
+      .svg-stage {
+        --stage: min(calc(100vw - 40px), 1080px);
+        box-shadow: 0 4px 28px rgba(0,0,0,0.11);
+        border-radius: 12px;
+      }
+    }
+
+    .svg-slice {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 648 / var(--h);
+      background: #f7f3ea;
+    }
+
+    /* Top slice: logo may paint slightly above/below nav strip — no layout jump */
+    .svg-slice[data-y="0"] {
+      overflow: visible;
+    }
+
+    /* שורת תפריט + לוגו — קומפוזיציה אחת מהקבצים שסופקו ע"י המשתמש.
+       ה-SVG הצומצם (main-menu-strip.svg) ביחס תוכן ≈ 1224:194 (6.31:1).
+       הגובה תואם לאותו יחס יחסית לרוחב הסטייג'. */
+    .slice-top-bar {
+      position: absolute;
+      z-index: 4;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      aspect-ratio: 1224 / 194;
+      height: auto;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      overflow: visible;
+      background: rgb(243, 239, 233);
+      line-height: 0;
+    }
+
+    .main-menu-strip {
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .main-menu-strip img,
+    .main-menu-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+      user-select: none;
+    }
+    /* Strip logo overlay — applied from tuner export */
+    .strip-logo {
+      position: absolute;
+      top: 50%;
+      right: 0%;
+      transform: translateY(-50%);
+      width: 29.5%;
+      height: auto;
+      max-height: 220%;
+      object-fit: contain;
+      object-position: center center;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
+    /* Allow logo + nav to overflow slice without clipping */
+    .slice-top-bar { overflow: visible !important; }
+    .svg-slice[data-y="0"] { overflow: visible !important; }
+    /* Inline SVG nav — interactive items with hover/active rectangle highlight on TEXT only */
+    .main-menu-svg .nav-item {
+      cursor: pointer;
+      pointer-events: bounding-box;
+    }
+    .main-menu-svg .nav-hit {
+      pointer-events: all;
+      fill: transparent;
+    }
+    .main-menu-svg .nav-text {
+      font-family: 'Heebo', 'Arial', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      fill: #1A6147;
+      pointer-events: none;
+    }
+    .main-menu-svg .nav-icon { pointer-events: none; }
+    .main-menu-svg .nav-highlight {
+      fill: #DBE7D6;
+      opacity: 0;
+      transition: opacity 0.18s;
+      pointer-events: none;
+    }
+    .main-menu-svg .nav-item:hover .nav-highlight,
+    .main-menu-svg .nav-active .nav-highlight {
+      opacity: 1;
+    }
+
+    /* כותרת הירו: תמונת טקסט מהעיצוב (במקום הכיתוב המקורי ב־PNG) */
+    .hero-headline-wrap {
+      position: absolute;
+      z-index: 3;
+      left: 5%;
+      width: min(46%, calc(300 / 648 * var(--stage)));
+      top: 26%;
+      height: 27%;
+      min-height: 72px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: clamp(2px, 0.8vw, 6px);
+      pointer-events: none;
+      background: transparent;
+      border-radius: 3px;
+    }
+
+    .hero-headline-wrap img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center right;
+    }
+
+    @media (max-width: 420px) {
+      .hero-headline-wrap {
+        left: 3%;
+        width: min(60%, calc(380 / 648 * var(--stage)));
+        top: 23%;
+        height: 24%;
+        min-height: 64px;
+      }
+    }
+
+    /* שתי שורות תחת סלוגן — תואם לרוחב .hero-headline-wrap (יישור תחילת מילים ב-RTL עם הכותרת) */
+    .hero-tagline-wrap {
+      position: absolute;
+      z-index: 3;
+      left: 5%;
+      width: min(46%, calc(300 / 648 * var(--stage)));
+      top: 54%;
+      box-sizing: border-box;
+      padding: clamp(2px, 0.8vw, 6px) clamp(2px, 0.8vw, 6px) clamp(2px, 0.8vw, 6px) 0;
+      pointer-events: none;
+      background: transparent;
+      border-radius: 3px;
+      text-align: right;
+      direction: rtl;
+      color: var(--text);
+      font-family: 'Rubik', 'Heebo', 'Arial', sans-serif;
+      font-weight: 400;
+      font-size: clamp(0.72rem, calc(15.5 / 648 * var(--stage)), 0.95rem);
+      line-height: 1.45;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-tagline-wrap p {
+      margin: 0;
+    }
+
+    .hero-tagline-wrap p + p {
+      margin-top: 0.15em;
+    }
+
+    @media (max-width: 420px) {
+      .hero-tagline-wrap {
+        left: 3%;
+        width: min(60%, calc(380 / 648 * var(--stage)));
+        top: 51%;
+        font-size: clamp(0.68rem, 3.4vw, 0.82rem);
+      }
+    }
+
+    .base-art {
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0;
+      width: 100%;
+      max-width: none;
+      height: auto;
+      transform: translateY(0);
+      user-select: none;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .landscape-cover {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      width: 100%;
+      top: 62%;
+      height: calc(420 / 585 * 100% - 62%);
+      background-color: #f7f3ea;
+      background-image: url('assets/images/countryside_clean.png');
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      pointer-events: none;
+    }
+
+    /* פס יתרונות: SVG מקורי מהמשתמש (4 אייקונים), נטען כתמונה ופורש על אזור הקרם
+       שמולא בבסיס. viewBox מקוצץ ב-_make_icons_strip.py בדיוק על האייקונים. */
+    .benefits-strip-svg {
+      position: absolute;
+      z-index: 4;
+      left: calc(35 / 648 * 100%);
+      width: calc((615 - 35) / 648 * 100%);
+      top: calc(420 / 585 * 100%);
+      height: calc((565 - 420) / 585 * 100%);
+      object-fit: contain;
+      object-position: center center;
+      pointer-events: none;
+    }
+    .benefits-seps {
+      position: absolute;
+      z-index: 5;
+      left: calc(35 / 648 * 100%);
+      width: calc((615 - 35) / 648 * 100%);
+      top: calc(435 / 585 * 100%);
+      height: calc(115 / 585 * 100%);
+      background-image:
+        linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent),
+        linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent);
+      background-size: 1px 100%, 1px 100%;
+      background-position: 50% 0, 75% 0;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    .hit {
+      position: absolute;
+      z-index: 5;
+      display: block;
+      border-radius: 999px;
+      background: transparent;
+      color: transparent;
+      overflow: hidden;
+    }
+
+    /* Cream cover — opaque rectangle hides baked smile + label without touching strip frame */
+    .club-cover {
+      position: absolute;
+      z-index: 5;
+      background: var(--cream);
+      pointer-events: none;
+    }
+    /* Combined badge + label (single transparent SVG) on top of cream cover */
+    .club-icon-replace {
+      position: absolute;
+      z-index: 6;
+      object-fit: contain;
+      pointer-events: none;
+      display: block;
+    }
+
+    .hit:focus-visible {
+      outline: 3px solid rgba(0, 111, 85, 0.45);
+      outline-offset: 2px;
+    }
+
+    /* תפריט עליון: כיסוי מלא של גובה פס הניווט (~17.6% מהסלייס) + מינימום נוח למגע */
+    .hit-main-nav {
+      top: 0 !important;
+      height: max(44px, 17.6%) !important;
+      box-sizing: border-box;
+      border-radius: 8px;
+    }
+    /* Club overlay — bg only on inner band (not full strip height), matches slice cream */
+    .nav-club {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: transparent !important;
+      overflow: visible !important;
+      color: var(--green) !important;
+    }
+    .nav-club-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      direction: rtl;
+      background: #fcf9f6;       /* match nav strip image bg (sampled pixel) */
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .nav-club-icon {
+      width: clamp(11px, 1.05vw, 16px);
+      height: clamp(11px, 1.05vw, 16px);
+      flex-shrink: 0;
+      color: var(--green);
+    }
+    .nav-club-text {
+      color: var(--green);
+      font-family: 'Heebo', sans-serif;
+      font-weight: 600;
+      font-size: clamp(0.5rem, 0.78vw, 0.78rem);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hero-main-photo {
+      position: absolute;
+      z-index: 2;
+      left: calc(48.6% + 20px);
+      top: calc(26.5% - 30px);
+      width: 40.16%;
+      height: 52.2%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-main-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+    }
+
+
+    .section-card {
+      position: absolute;
+      z-index: 2;
+      top: 2%;
+      left: 5%;
+      right: 1%;
+      bottom: 5%;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 4% 5% 4% 5%;
+      text-align: right;
+      direction: rtl;
+      font-family: 'Rubik', sans-serif;
+      color: var(--green);
+      overflow: hidden;
+      pointer-events: none;
+      isolation: isolate;
+    }
+    /* אותו מרווח תחתון — כפתורים באותה גובה יחסית למסגרת */
+    #deals .section-card,
+    #fresh .section-card,
+    #jobs .section-card {
+      bottom: 12%;
+    }
+
+    /* מבצעים מתחדשים + מוצרים טריים + דרושים — טקסט + תמונה ממול ב־RTL */
+    #deals .section-card.section-card--split,
+    #fresh .section-card.section-card--split,
+    #jobs .section-card.section-card--split {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+    }
+    #deals .section-card-copy,
+    #fresh .section-card-copy,
+    #jobs .section-card-copy {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: right;
+      align-self: stretch;
+    }
+    /* DESKTOP — uniform figure: same width, aspect, contain (no crop), breathing margin */
+    #deals .section-card-figure,
+    #fresh .section-card-figure,
+    #jobs .section-card-figure {
+      flex: 0 0 auto;
+      background: transparent;
+      isolation: isolate;
+      width: min(50%, 240px);
+      max-width: 240px;
+      aspect-ratio: 1.5 / 1;
+      align-self: center;
+      margin-block: 12px;
+      transform: translateX(calc(100px - 25%));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #deals .section-card-figure img,
+    #fresh .section-card-figure img,
+    #jobs .section-card-figure img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      background: transparent;
+    }
+    @media (max-width: 400px) {
+      #deals .section-card.section-card--split,
+      #fresh .section-card.section-card--split,
+      #jobs .section-card.section-card--split {
+        padding: 10px 12px;
+        gap: 8px;
+      }
+      #deals .section-card-figure,
+      #fresh .section-card-figure,
+      #jobs .section-card-figure {
+        width: min(38%, 130px);
+        max-width: 130px;
+      }
+    }
+
+    .section-card-title {
+      font-size: clamp(1.1rem, 4vw, 1.75rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0;
+    }
+    .section-card-sub {
+      font-size: clamp(0.65rem, 2.2vw, 0.95rem);
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0.3em 0 0 0;
+    }
+    .section-card-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      box-sizing: border-box;
+      inline-size: min(var(--section-card-btn-target), 100%);
+      flex: 0 0 auto;
+      padding: 0.5em 1.5em;
+      background: var(--green);
+      color: #fff;
+      font-family: 'Rubik', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.7rem, 2.2vw, 0.95rem);
+      border: none;
+      border-radius: 999px;
+      white-space: nowrap;
+      line-height: 1;
+      text-decoration: none;
+      pointer-events: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 4;
+    }
+    .section-card-img {
+      position: absolute;
+      right: 3%;
+      top: 5%;
+      bottom: 5%;
+      width: 45%;
+      object-fit: contain;
+      object-position: center;
+      background: transparent;
+    }
+
+    img { display: block; max-width: 100%; }
+    a   { text-decoration: none; }
+
+    /* ══════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 300;
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px;
+      gap: 12px;
+    }
+
+    /* Hamburger (mobile-only) */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 2.5px;
+      background: var(--green);
+      border-radius: 2px;
+      transition: all .28s;
+    }
+
+    /* Desktop nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 18px;
+      flex-wrap: nowrap;
+    }
+    .nav-links li { display: flex; align-items: center; }
+    /* Dots between nav items removed per request */
+    .nav-links a {
+      color: var(--green);
+      font-size: 0.92rem;
+      font-weight: 700;
+      white-space: nowrap;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      transition: color .2s, background .2s;
+    }
+    .nav-links a:hover,
+    .nav-links a:active {
+      color: var(--green);
+      background: rgba(26, 97, 71, 0.12);
+    }
+
+    /* Logo badge */
+    .logo-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--green);
+      color: white;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      text-align: center;
+      flex-shrink: 0;
+      padding: 6px 4px;
+      transition: transform .2s;
+    }
+    .logo-badge:hover { transform: scale(1.04); }
+    .logo-name {
+      font-size: 0.88rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.3px;
+    }
+    .logo-sub  {
+      font-size: 0.38rem;
+      font-weight: 400;
+      line-height: 1.4;
+      margin-top: 1px;
+      opacity: 0.9;
+    }
+    .logo-tractor { font-size: 0.8rem; margin-top: 3px; }
+
+    /* Mobile slide-in nav */
+    .nav-mobile {
+      /* always flex — transform hides it off-screen so transition can work */
+      display: flex;
+      position: fixed;
+      top: 0; right: 0;
+      width: 72vw;
+      max-width: 280px;
+      height: 100vh;
+      background: var(--cream);
+      z-index: 350;
+      padding: 90px 24px 40px;
+      flex-direction: column;
+      gap: 0;
+      box-shadow: -4px 0 24px rgba(0,0,0,.12);
+      transform: translateX(105%);
+      transition: transform .3s ease;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .nav-mobile.open {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .nav-mobile a {
+      display: block;
+      padding: 13px 0;
+      color: var(--green);
+      font-size: 1rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      transition: color .2s;
+    }
+    .nav-mobile a:hover { color: var(--green-lite); }
+
+    .nav-overlay {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      z-index: 340;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .nav-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ══════════════════════════════════
+       HERO
+    ══════════════════════════════════ */
+    .hero { background: var(--cream); overflow: hidden; }
+
+    .hero-inner {
+      display: flex;
+      align-items: flex-start;
+      /* RTL flex: first child → RIGHT, second → LEFT */
+      padding: 26px 18px 0;
+      gap: 14px;
+      min-height: 240px;
+    }
+
+    /* Image: first in HTML → appears on RIGHT in RTL */
+    .hero-img-wrap {
+      flex-shrink: 0;
+      width: clamp(150px, 42vw, 210px);
+      height: clamp(150px, 42vw, 210px);
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid var(--cream);
+      box-shadow: 0 8px 28px rgba(0,0,0,.16);
+      align-self: flex-start;
+    }
+    .hero-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    /* Text: second in HTML → appears on LEFT in RTL */
+    .hero-text {
+      flex: 1;
+      min-width: 0;
+      padding-top: 8px;
+    }
+    .hero-title {
+      font-size: clamp(2.6rem, 10vw, 5.5rem);
+      font-weight: 900;
+      color: var(--green);
+      line-height: 0.92;
+      letter-spacing: -1.5px;
+    }
+    .hero-subtitle {
+      font-size: clamp(0.95rem, 3.2vw, 1.4rem);
+      font-weight: 700;
+      color: var(--green);
+      margin-top: 6px;
+      letter-spacing: 0.4px;
+    }
+    .hero-desc {
+      font-size: clamp(0.72rem, 2.4vw, 0.88rem);
+      color: var(--text-mid);
+      margin-top: 10px;
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* ── Farm landscape SVG ── */
+    .landscape-svg {
+      display: block;
+      width: 100%;
+      margin-top: -4px;
+    }
+
+    /* ══════════════════════════════════
+       FEATURE CARDS
+    ══════════════════════════════════ */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 12px 14px;
+    }
+
+    .feat-card {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 6px 14px;
+      text-align: center;
+    }
+
+    .feat-icon {
+      width: 46px;
+      height: 46px;
+      color: var(--green);
+    }
+
+    .feat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    /* ══════════════════════════════════
+       CONTENT SECTION CARDS
+    ══════════════════════════════════ */
+    .sections-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      padding: 8px 16px 22px;
+    }
+
+    .sec-card {
+      background: var(--cream-card);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      min-height: 155px;
+    }
+
+    /*
+      RTL flex order:
+        sec-text  (first in HTML) → RIGHT side ✓
+        sec-img   (second in HTML) → LEFT side ✓
+    */
+    .sec-text {
+      flex: 1;
+      min-width: 0;
+      padding: 20px 20px 20px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .sec-title {
+      font-size: clamp(1.15rem, 4.5vw, 1.55rem);
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1.1;
+    }
+
+    .sec-desc {
+      font-size: clamp(0.68rem, 2.2vw, 0.78rem);
+      color: var(--text-mid);
+      line-height: 1.55;
+    }
+
+    .btn-green {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 8px 20px;
+      background: var(--green);
+      color: white;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      width: fit-content;
+      transition: background .2s, transform .15s;
+    }
+    .btn-green:hover { background: var(--green-mid); transform: translateY(-1px); }
+    .btn-green:active { transform: translateY(0); }
+
+    .sec-img {
+      flex-shrink: 0;
+      width: clamp(130px, 38vw, 165px);
+      position: relative;
+      overflow: hidden;
+    }
+    .sec-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* % badge on deals card — positioned at outer-bottom-left of image */
+    .badge-pct {
+      position: absolute;
+      bottom: 14px;
+      left: 12px;
+      width: 42px;
+      height: 42px;
+      background: var(--green-lite);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 900;
+      box-shadow: 0 3px 10px rgba(0,0,0,.25);
+    }
+
+    /* Jobs card: branded tote bag */
+    .jobs-img-inner {
+      width: 100%;
+      height: 100%;
+      background: var(--green-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 8px;
+    }
+
+    /* People watermark behind sec-text in jobs */
+    .jobs-watermark {
+      position: absolute;
+      right: 0; left: 0; top: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-left: 8px;
+      pointer-events: none;
+      opacity: 0.08;
+    }
+
+    /* ══════════════════════════════════
+       FOOTER
+    ══════════════════════════════════ */
+    footer {
+      background: var(--green);
+      color: white;
+      text-align: center;
+      padding: 14px 20px;
+      font-size: 0.72rem;
+    }
+    footer a { color: white; opacity: 0.85; transition: opacity .2s; }
+    footer a:hover { opacity: 1; }
+    .fsep { margin: 0 8px; opacity: 0.35; }
+
+    /* ══════════════════════════════════
+       RESPONSIVE — TABLET 640 +
+    ══════════════════════════════════ */
+    @media (min-width: 641px) {
+      .hamburger { display: none !important; }
+      .nav-links  { display: flex !important; }
+    }
+
+    @media (max-width: 640px) {
+      .hamburger  { display: flex; }
+      .nav-links  { display: none; }
+      /* 4 cols on mobile — compact icons like original design */
+      .features   {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        padding: 10px 10px;
+      }
+      .feat-card  { padding: 12px 4px 10px; border-radius: 12px; }
+      .feat-icon  { width: 34px; height: 34px; }
+      .feat-label { font-size: 0.62rem; }
+    }
+
+    @media (max-width: 380px) {
+      .features { gap: 4px; padding: 8px; }
+      .feat-icon { width: 28px; height: 28px; }
+      .feat-label { font-size: 0.56rem; }
+    }
+
+    @media (min-width: 641px) and (max-width: 900px) {
+      .navbar      { padding: 10px 28px; }
+      .hero-inner  { padding: 34px 28px 0; }
+      .hero-img-wrap { width: 230px; height: 230px; }
+      .features    { padding: 16px 28px; gap: 14px; }
+      .sections-wrap { padding: 10px 28px 28px; }
+      .sec-card    { min-height: 175px; }
+      .sec-img     { width: 200px; }
+    }
+
+    @media (min-width: 901px) and (max-width: 1199px) {
+      .navbar      { padding: 12px 50px; }
+      .logo-badge  { width: 78px; height: 78px; }
+      .logo-name   { font-size: 0.95rem; }
+      .hero-inner  { padding: 44px 50px 0; }
+      .hero-img-wrap { width: 270px; height: 270px; }
+      .features    { padding: 20px 50px; gap: 16px; }
+      .feat-icon   { width: 52px; height: 52px; }
+      .feat-label  { font-size: 0.78rem; }
+      .sections-wrap { padding: 12px 50px 36px; gap: 18px; }
+      .sec-card    { min-height: 195px; }
+      .sec-img     { width: 240px; }
+    }
+
+    @media (min-width: 1200px) {
+      .navbar       { padding: 12px 80px; }
+      .logo-badge   { width: 82px; height: 82px; }
+      .logo-name    { font-size: 1rem; }
+      .logo-sub     { font-size: 0.44rem; }
+      .nav-links a  { font-size: 1rem; }
+      .hero-inner   { padding: 54px 80px 0; gap: 28px; }
+      .hero-img-wrap { width: 310px; height: 310px; }
+      .hero-title   { letter-spacing: -2px; }
+      .features     { padding: 24px 80px; gap: 20px; }
+      .feat-card    { padding: 22px 10px 18px; }
+      .feat-icon    { width: 56px; height: 56px; }
+      .feat-label   { font-size: 0.82rem; }
+      .sections-wrap { padding: 14px 80px 44px; gap: 22px; }
+      .sec-card     { min-height: 210px; }
+      .sec-img      { width: 280px; }
+      .sec-title    { font-size: 1.7rem; }
+      .sec-desc     { font-size: 0.84rem; }
+      .btn-green    { font-size: 0.86rem; padding: 9px 24px; }
+    }
+
+    @media (min-width: 1500px) {
+      .navbar        { padding: 14px 120px; }
+      .hero-inner    { padding: 64px 120px 0; }
+      .hero-img-wrap { width: 350px; height: 350px; }
+      .features      { padding: 28px 120px; }
+      .sections-wrap { padding: 16px 120px 54px; }
+      .sec-img       { width: 320px; }
+    }
+
+    @media (max-width: 380px) {
+      .hero-title    { font-size: 2.3rem; }
+      .hero-img-wrap { width: 38vw; height: 38vw; }
+      .sec-img       { width: 34vw; }
+      .sec-card      { min-height: 130px; }
+      .sec-text      { padding: 14px 14px 14px 8px; }
+      /* features overridden by more specific rule above */
+      #deals .section-card-figure,
+      #fresh .section-card-figure,
+      #jobs .section-card-figure {
+        width: min(36%, 110px);
+      }
+      #deals .section-card-figure,
+      #jobs .section-card-figure {
+        width: min(calc(36% * var(--deals-figure-scale)), calc(110px * var(--deals-figure-scale)));
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       MOBILE — content sections ≤599px
+       COMPLETE ISOLATION — zero overlap with desktop rules
+       כל שורה כאן נוגעת רק ב-#deals/#fresh/#jobs בתוך הbreakpoint
+       ══════════════════════════════════════════════════════════════ */
+    @media (max-width: 599px) {
+
+      /* 1. Slice: מבטל aspect-ratio → גובה = גובה הcard הזורם */
+      #deals,
+      #fresh,
+      #jobs {
+        aspect-ratio: unset;
+        padding: 8px 8px 0;
+        box-sizing: border-box;
+        background: #f7f3ea;
+      }
+      #jobs { padding-bottom: 8px; }
+
+      /* 2. base-art: מוסתר — card נקי על רקע קרם */
+      #deals .base-art,
+      #fresh .base-art,
+      #jobs .base-art {
+        display: none;
+      }
+
+      /* 3. Card: יוצא מ-absolute → זורם רגיל */
+      #deals .section-card,
+      #fresh .section-card,
+      #jobs .section-card {
+        position: static;
+        margin: 0;
+        padding: 0;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      /* 4. Column layout: תמונה למעלה, טקסט למטה */
+      #deals .section-card.section-card--split,
+      #fresh .section-card.section-card--split,
+      #jobs .section-card.section-card--split {
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        align-items: stretch;
+      }
+
+      /* 5. Figure: IMAGE SLOT PATTERN (css-expert PATTERN A)
+         position:relative + overflow:hidden על container
+         img: position:absolute; inset:0 — מובטח ללא תלות ב-flex resolution */
+      #deals .section-card-figure,
+      #fresh .section-card-figure,
+      #jobs .section-card-figure {
+        position: relative !important;
+        order: 1;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 80px !important;
+        min-height: 80px !important;
+        flex: 0 0 80px !important;
+        transform: none !important;
+        overflow: hidden !important;
+        border-radius: 0 !important;
+      }
+
+      /* img: absolute inset — fills container definitively per css-expert PATTERN A */
+      #deals .section-card-figure img,
+      #fresh .section-card-figure img,
+      #jobs .section-card-figure img {
+        display: block !important;
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        aspect-ratio: unset !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        background: #f7f3ea !important;
+      }
+      /* Fresh: cover כמו deals/jobs — אחידות */
+      #fresh .section-card-figure img {
+        object-fit: cover !important;
+        object-position: center center !important;
+      }
+
+      /* 7. Copy: טקסט + כפתור מתחת לתמונה */
+      #deals .section-card-copy,
+      #fresh .section-card-copy,
+      #jobs .section-card-copy {
+        order: 2;
+        padding: 14px 16px 16px;
+        align-self: auto;
+      }
+
+      /* 8. כפתור: רוחב מלא במובייל */
+      #deals .section-card-btn,
+      #fresh .section-card-btn,
+      #jobs .section-card-btn {
+        width: 100%;
+        margin-top: 12px;
+        justify-content: center;
+      }
+    }
+    /* ══ END MOBILE ══ */
+
+    /* ══════════════════════════════════════════════════════════════
+       MOBILE ONLY — navbar, hit areas (≤599px)
+       ══════════════════════════════════════════════════════════════ */
+    @media (max-width: 599px) {
+
+      /* Hero slice: חוסם overflow → base-art לא מדמם על deals */
+      .svg-slice[data-y="0"] { overflow: hidden; }
+
+      /* deals/fresh/jobs slices: z-index מעל hero overflow */
+      #deals, #fresh, #jobs { z-index: 1; }
+
+      /* Navbar: position fixed → מוצב בראש הדף ללא תלות במיקום ב-DOM */
+      .navbar {
+        display: flex !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        z-index: 1000;
+        flex-direction: row-reverse; /* RTL+row-reverse → left-to-right: לוגו שמאל, hamburger ימין */
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 14px;
+        background: var(--cream);
+        border-bottom: 1px solid rgba(200,198,192,0.4);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      }
+      .svg-stage { padding-top: 0; }
+
+      .nav-links { display: none !important; }
+
+      /* FIX 1: הסרת order — DOM order + row-reverse = לוגו שמאל, hamburger ימין */
+      .hamburger {
+        display: flex !important;
+        order: unset;
+      }
+
+      /* Logo badge handled in MOBILE TUNER FINAL block below — only hide spans here */
+      .logo-name, .logo-sub, .logo-tractor { display: none !important; }
+      .hamburger { order: unset; }
+
+      /* הסתרת תפריט SVG */
+      .slice-top-bar { display: none !important; }
+
+      /* TECHNIQUE 1 (css-expert): כיסוי פס הניווט הבנוי ב-base-art PNG */
+      .svg-slice[data-y="0"]::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 17.6%; /* גובה פס הניווט ≈ 17.6% מגובה ה-slice */
+        background: var(--cream);
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      /* FIX 3: תמונות — מטופל בבלוק ה-content sections למעלה */
+
+      /* Hit areas: מסתיר outline בטאץ' */
+      .hit:focus { outline: none; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       MOBILE TUNER FINAL — applied 2026-05-08
+       ══════════════════════════════════════════════════════════════ */
+    @media (max-width: 599px) {
+      /* Figure: 100% width, height 158px, contain image, bg #f0e3c7 */
+      #deals .section-card-figure,
+      #fresh .section-card-figure,
+      #jobs .section-card-figure {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: -9px !important;
+        margin-right: 9px !important;
+        height: 158px !important;
+        min-height: 158px !important;
+        flex: 0 0 158px !important;
+        background: #f0e3c7 !important;
+        border-radius: 0 !important;
+        aspect-ratio: unset !important;
+        transform: none !important;
+        align-self: center !important;
+        overflow: hidden !important;
+      }
+      /* Per-section width override: deals at 69% */
+      #deals .section-card-figure {
+        width: 69% !important;
+        max-width: 69% !important;
+        margin-left: calc(15.5% - 9px) !important;
+        margin-right: calc(15.5% + 9px) !important;
+      }
+      /* Image: contain, scale 1, full size */
+      #deals .section-card-figure img,
+      #fresh .section-card-figure img,
+      #jobs .section-card-figure img {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        aspect-ratio: unset !important;
+        object-fit: contain !important;
+        background: #f0e3c7 !important;
+        transform: scale(1) !important;
+        filter: none !important;
+      }
+      #deals .section-card-figure img { object-position: 50% 50% !important; }
+      #fresh .section-card-figure img { object-position: 50% 50% !important; }
+      #jobs  .section-card-figure img { object-position: 50% 20% !important; }
+
+      /* Title margin */
+      #deals .section-card-title,
+      #fresh .section-card-title,
+      #jobs .section-card-title { margin-bottom: 4px !important; }
+
+      /* Navbar + logo isolated */
+      .navbar {
+        padding: 3px 27px !important;
+        min-height: 73px !important;
+        align-items: center !important;
+      }
+      /* Mobile: navbar uses justify-content space-between (already set).
+         Socials wrapper sits at flex-grow center between hamburger and logo. */
+      .navbar-socials {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 14px !important;
+        flex: 1 1 auto !important;
+      }
+      .navbar-social {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 32px !important;
+        height: 32px !important;
+        line-height: 0 !important;
+        flex-shrink: 0 !important;
+      }
+      .navbar-social svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+      /* Hide footer social links on mobile (already in navbar) */
+      footer .social-link { display: none !important; }
+      footer .social-link + span { display: none !important; }
+      .logo-badge {
+        width: 55px !important;
+        height: 55px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important;
+        flex-shrink: 0 !important;
+        overflow: visible !important;
+        position: relative !important;
+      }
+      /* Inner image: visual size 173px, anchored center, overflows box without affecting layout */
+      .logo-badge::before {
+        content: '';
+        display: block !important;
+        width: 173px !important;
+        height: 173px !important;
+        max-width: none !important;
+        max-height: none !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        background: url('assets/images/trans_logo_marcolit.png') center/contain no-repeat !important;
+        pointer-events: none !important;
+      }
+
+      /* Sub + button on SAME row, title above */
+      #deals .section-card-copy,
+      #fresh .section-card-copy,
+      #jobs .section-card-copy {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-areas:
+          "title title"
+          "sub    button" !important;
+        column-gap: 10px !important;
+        row-gap: 4px !important;
+        align-items: center !important;
+        padding: 14px 16px 16px !important;
+      }
+      #deals .section-card-title,
+      #fresh .section-card-title,
+      #jobs .section-card-title { grid-area: title !important; font-size: 1.4rem !important; }
+      #deals .section-card-sub,
+      #fresh .section-card-sub,
+      #jobs .section-card-sub {
+        grid-area: sub !important;
+        margin-bottom: 0 !important;
+        align-self: center !important;
+        font-size: 0.85rem !important;
+      }
+      #deals .section-card-btn,
+      #fresh .section-card-btn,
+      #jobs .section-card-btn {
+        grid-area: button !important;
+        width: auto !important;
+        white-space: nowrap !important;
+        align-self: center !important;
+        margin-top: 0 !important;
+        padding: 8px 14px !important;
+      }
+    }
+
+    /* Hero (≤420px) — headline + tagline width */
+    @media (max-width: 420px) {
+      .hero-headline-wrap,
+      .hero-tagline-wrap {
+        width: min(62%, calc(385 / 648 * var(--stage))) !important;
+      }
+    }
+
+    /* Hero shifts (transform) */
+    .hero-headline-wrap { transform: translate(0, 0) !important; }
+    .hero-tagline-wrap  { transform: translate(2px, 0) !important; }
+
+    /* hero-mobile-tuner export — 2026-05-10 */
+    @media (max-width: 599px) {
+      .hero-headline-wrap {
+        width: 57.5% !important; /* was: 61.7% */
+      }
+      .hero-headline-wrap img {
+        transform: scale(0.85) !important;
+        transform-origin: center center !important;
+      }
+      .hero-tagline-wrap {
+        width: 60.5% !important; /* was: 61.7% */
+        transform: translate(-24px, 0px) !important;
+        font-size: 0.74rem !important; /* was: 0.8rem */
+      }
+    }
+
+    /* Hero main photo */
+    .hero-main-photo {
+      left: calc(51% + 20px) !important;
+      width: 38.5% !important;
+      top: calc(29.5% - 30px) !important;
+    }
+  </style>
+</head>
+<body>
+
+<main class="exact-svg-page" aria-label="מרכולית - דף נחיתה">
+  <div class="svg-stage" aria-label="מרכולית - חוויית כפרית">
+    <!-- Top + hero + benefits -->
+    <section class="svg-slice" data-y="0" style="--y: 0; --h: 585;" aria-label="פתיח ויתרונות">
+      <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <img class="benefits-strip-svg" src="assets/markolit-icones-strip.svg" alt="" decoding="async" aria-hidden="true" />
+      <div class="benefits-seps" aria-hidden="true"></div>
+
+      <div class="slice-top-bar" role="navigation" aria-label="ניווט עליון">
+        <svg class="main-menu-svg" viewBox="0 0 1224 194" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="1224" height="194" fill="#FCF9F6"/>
+
+          <!-- בית (active) — items via tuner: itemGap=166, groupX=220 -->
+          <a href="#home" class="nav-item nav-active">
+            <rect class="nav-hit" x="760" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-30" y="100" width="60" height="32" rx="6" transform="translate(830, 0)"/>
+            <g transform="translate(830, 0)">
+              <g transform="translate(0, 60)">
+                <path class="nav-icon" d="M-12,4 L0,-8 L12,4 L12,14 L-12,14 Z" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <rect x="-4" y="6" width="8" height="8" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">בית</text>
+            </g>
+          </a>
+
+          <!-- סניפים -->
+          <a href="#branches" class="nav-item">
+            <rect class="nav-hit" x="615" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-44" y="100" width="88" height="32" rx="6" transform="translate(685, 0)"/>
+            <g transform="translate(685, 0)">
+              <g transform="translate(0, 60)">
+                <path class="nav-icon" d="M0,-10 C-7,-10 -12,-5 -12,2 C-12,9 0,18 0,18 C0,18 12,9 12,2 C12,-5 7,-10 0,-10 Z" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <circle cx="0" cy="2" r="3.5" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">סניפים</text>
+            </g>
+          </a>
+
+          <!-- אודותינו -->
+          <a href="#about" class="nav-item">
+            <rect class="nav-hit" x="470" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-50" y="100" width="100" height="32" rx="6" transform="translate(540, 0)"/>
+            <g transform="translate(540, 0)">
+              <g transform="translate(0, 60)">
+                <path class="nav-icon" d="M-10,10 C-12,-2 -4,-12 10,-10 C12,4 4,12 -10,10 Z" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <path d="M-10,10 L8,-8" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">אודותינו</text>
+            </g>
+          </a>
+
+          <!-- דרושים -->
+          <a href="#jobs" class="nav-item">
+            <rect class="nav-hit" x="325" y="35" width="140" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-44" y="100" width="88" height="32" rx="6" transform="translate(395, 0)"/>
+            <g transform="translate(395, 0)">
+              <g transform="translate(0, 60)">
+                <rect x="-12" y="-3" width="24" height="16" rx="2" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <path d="M-6,-3 L-6,-8 L6,-8 L6,-3" fill="none" stroke="#1A6147" stroke-width="2"/>
+                <line x1="-12" y1="4" x2="12" y2="4" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">דרושים</text>
+            </g>
+          </a>
+
+          <!-- מועדון הטבות -->
+          <a href="https://lp6.me/w0plE" target="_blank" rel="noopener" class="nav-item">
+            <rect class="nav-hit" x="160" y="35" width="180" height="120" fill="transparent"/>
+            <rect class="nav-highlight" x="-72" y="100" width="144" height="32" rx="6" transform="translate(250, 0)"/>
+            <g transform="translate(250, 0)">
+              <g transform="translate(0, 60)">
+                <polygon points="0,-12 3.5,-3.5 12,-3.5 5,2.5 7.5,11 0,6 -7.5,11 -5,2.5 -12,-3.5 -3.5,-3.5" fill="none" stroke="#1A6147" stroke-width="2"/>
+              </g>
+              <text class="nav-text" text-anchor="middle" x="0" y="123">מועדון הטבות</text>
+            </g>
+          </a>
+        </svg>
+        <img class="strip-logo" src="assets/images/trans_logo_marcolit.png" alt="מרכולית" />
+      </div>
+
+      <div class="hero-headline-wrap">
+        <img src="assets/hero-title-transparent.png" alt="רשת מרכולית — חוויה כפרית" width="652" height="193" decoding="async" />
+      </div>
+
+      <div class="landscape-cover" aria-hidden="true"></div>
+
+      <div class="hero-main-photo" aria-hidden="true">
+        <img src="assets/main-photo-transparent.png" alt="" width="1836" height="1756" decoding="async" />
+      </div>
+
+      <div class="hero-tagline-wrap">
+        <p>מוצרים טריים, איכות ושירות עם חיוך</p>
+        <p class="tagline-sub">כל השבוע בשבילך</p>
+      </div>
+
+      <a class="hit hit-main-nav" href="#home" aria-label="בית ולוגו מרכולית" style="left: 60%; width: 39%;"></a>
+      <a class="hit hit-main-nav" href="#branches" aria-label="סניפים" style="left: 46%; width: 14%;"></a>
+      <a class="hit hit-main-nav" href="#about" aria-label="אודותינו" style="left: 32%; width: 14%;"></a>
+      <a class="hit hit-main-nav" href="#jobs" aria-label="דרושים" style="left: 19%; width: 13%;"></a>
+<!-- nav-club overlay removed — replaced by CSS navbar nav-links -->
+      <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="תוצרת טריה כל יום" style="left: 5%; top: 82%; width: 20%; height: 14%;"></a>
+      <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="מבצעים שבועיים" style="left: 29%; top: 82%; width: 18%; height: 14%;"></a>
+      <div class="club-cover" aria-hidden="true"
+           style="left: 51.49%; top: 73.54%; width: 19.69%; height: 21.32%;"></div>
+      <img class="club-icon-replace" src="assets/images/join_club_combined.svg" alt="" aria-hidden="true" decoding="async"
+           style="left: 51.49%; top: 73.54%; width: 19.69%; height: 21.32%;" />
+      <a class="hit" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפו למועדון ההטבות" style="left: 52%; top: 82%; width: 18%; height: 14%;"></a>
+      <a class="hit" href="#meat" aria-label="בשרים איכותיים" style="left: 75%; top: 82%; width: 20%; height: 14%;"></a>
+    </section>
+
+    <!-- Swapped order: deals first -->
+    <section class="svg-slice" id="deals" data-y="772" style="--y: 772; --h: 187;" aria-label="מבצעים מתחדשים">
+      <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <div class="section-card section-card--split">
+        <div class="section-card-copy">
+          <p class="section-card-title">מבצעים מתחדשים</p>
+          <p class="section-card-sub">כל שבוע מבצעי שלישוק בשבילך</p>
+          <a class="section-card-btn" href="https://l5k.me/avn6C" target="_blank" rel="noopener" style="text-decoration:none">שלישוק במרכולית</a>
+        </div>
+        <div class="section-card-figure">
+          <img
+            src="assets/images/weekly_sale2.png"
+            alt="מבצעים מתחדשים — מבצעי השבוע"
+            width="1027"
+            height="682"
+            decoding="async"
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <a class="hit" href="https://l5k.me/avn6C" target="_blank" rel="noopener" aria-label="שלישוק במרכולית" style="left: 5%; top: 60%; width: 25%; height: 22%;"></a>
+    </section>
+
+    <section class="svg-slice" id="fresh" data-y="585" style="--y: 585; --h: 187;" aria-label="מוצרים טריים">
+      <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <div class="section-card section-card--split">
+        <div class="section-card-copy">
+          <p class="section-card-title">מוצרים טריים</p>
+          <p class="section-card-sub">בשרים, פירות וירקות מהקלאים ועוד...</p>
+          <span class="section-card-btn">למגוון המלא</span>
+        </div>
+        <div class="section-card-figure">
+          <img
+            src="assets/images/fresh_final.png"
+            alt="מוצרים טריים - תצוגת מבצע"
+            width="1027"
+            height="682"
+            decoding="async"
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <a class="hit" href="#fresh" aria-label="למגוון המלא" style="left: 5%; top: 60%; width: 25%; height: 22%;"></a>
+    </section>
+
+    <section class="svg-slice" id="jobs" data-y="959" style="--y: 959; --h: 193;" aria-label="דרושים">
+      <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <div class="section-card section-card--split">
+        <div class="section-card-copy">
+          <p class="section-card-title">דרושים</p>
+          <p class="section-card-sub">למגוון תפקידים. שכר הוגן ואפשרויות קידום</p>
+          <a class="section-card-btn" href="#jobs" aria-label="בואו לעבוד אצלנו">בואו לעבוד אצלנו</a>
+        </div>
+        <div class="section-card-figure">
+          <img
+            src="assets/images/employee.png"
+            alt="דרושים — הצוות במרכולית"
+            width="1027"
+            height="682"
+            decoding="async"
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <a class="hit" href="#jobs" aria-label="בואו לעבוד אצלנו" style="left: 5%; top: 52%; width: 25%; height: 22%;"></a>
+      <a class="hit" href="#privacy" aria-label="מדיניות פרטיות ותנאי שימוש" style="left: 43%; bottom: 1%; width: 28%; height: 12%;"></a>
+      <a class="hit" href="https://lp6.me/w0plE" target="_blank" rel="noopener" aria-label="הצטרפות למועדון ההטבות" style="left: 32%; bottom: 1%; width: 9%; height: 12%;"></a>
+      <a class="hit" href="#branches" aria-label="סניפים" style="left: 22%; bottom: 1%; width: 9%; height: 12%;"></a>
+      <a class="hit" href="#jobs" aria-label="דרושים" style="left: 12%; bottom: 1%; width: 9%; height: 12%;"></a>
+    </section>
+
+    <!-- ══ FOOTER (inside svg-stage) ══ -->
+    <footer style="
+      background: transparent;
+      color: var(--green);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      font-family: 'Heebo', sans-serif;
+      width: 100%;
+      direction: rtl;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    ">
+      <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">מדיניות פרטיות ותנאי שימוש</a>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
+      <a href="https://lp6.me/w0plE" target="_blank" rel="noopener" style="color: var(--green); text-decoration: none; font-weight: 700;">הצטרפות למועדון</a>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
+      <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">סניפים</a>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
+      <a href="#" style="color: var(--green); text-decoration: none; font-weight: 700;">דרושים</a>
+      <span style="opacity: 0.4; color: var(--green);">|</span>
+      <a class="social-link" href="https://www.facebook.com/reshetmarkolit/" target="_blank" rel="noopener" aria-label="Facebook" style="display:inline-flex;align-items:center;line-height:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#256d6c" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+      <a class="social-link" href="https://www.instagram.com/markolit_supermarket/" target="_blank" rel="noopener" aria-label="Instagram" style="display:inline-flex;align-items:center;line-height:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#256d6c" stroke-width="1.7" aria-hidden="true">
+          <rect x="2.5" y="2.5" width="19" height="19" rx="5"/>
+          <circle cx="12" cy="12" r="4.2"/>
+          <circle cx="17.5" cy="6.5" r="1.1" fill="#256d6c" stroke="none"/>
+        </svg>
+      </a>
+    </footer>
+
+  </div>
+</main>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar" role="navigation" aria-label="ניווט ראשי">
+
+  <!-- Logo badge — RTL right side -->
+  <a href="#" class="logo-badge" aria-label="מרכולית - חוויית כפרית, עמוד ראשי">
+    <span class="logo-name">מרכולית</span>
+    <span class="logo-sub">חוויית כפרית</span>
+    <span class="logo-tractor" aria-hidden="true">🚜</span>
+  </a>
+
+  <!-- Socials grouped at navbar center (mobile only) -->
+  <div class="navbar-socials">
+    <a class="navbar-social fb" href="https://www.facebook.com/reshetmarkolit/" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg viewBox="0 0 24 24" fill="#256d6c" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
+    <a class="navbar-social ig" href="https://www.instagram.com/markolit_supermarket/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#256d6c" stroke-width="1.7" aria-hidden="true">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5"/>
+        <circle cx="12" cy="12" r="4.2"/>
+        <circle cx="17.5" cy="6.5" r="1.1" fill="#256d6c" stroke="none"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Desktop links — RTL: בית at RIGHT, club at LEFT -->
+  <ul class="nav-links" role="list">
+    <li><a href="#">בית</a></li>
+    <li><a href="#">סניפים</a></li>
+    <li><a href="#">אודותינו</a></li>
+    <li><a href="#">דרושים</a></li>
+    <li><a href="https://lp6.me/w0plE" target="_blank" rel="noopener">הצטרפות למועדון ההטבות</a></li>
+  </ul>
+
+  <!-- Hamburger — LAST in HTML → LEFT side in RTL ✓ (mobile only) -->
+  <button class="hamburger" id="menuBtn" aria-label="פתח תפריט" aria-expanded="false" onclick="openNav()">
+    <span></span><span></span><span></span>
+  </button>
+
+</nav>
+
+<!-- Mobile drawer nav -->
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()" aria-hidden="true"></div>
+<nav class="nav-mobile" id="navMobile" aria-label="תפריט נייד">
+  <a href="#" onclick="closeNav()">בית</a>
+  <a href="#" onclick="closeNav()">סניפים</a>
+  <a href="#" onclick="closeNav()">אודותינו</a>
+  <a href="#" onclick="closeNav()">דרושים</a>
+  <a href="https://lp6.me/w0plE" target="_blank" rel="noopener" onclick="closeNav()">הצטרפות למועדון ההטבות</a>
+</nav>
+
+
+<!-- ══ HERO ══ -->
+<section class="hero" aria-label="כותרת ראשית">
+  <div class="hero-inner">
+
+    <!--
+      RTL flex: first child → RIGHT side of screen.
+      Hero image sits on the RIGHT. ✓
+    -->
+    <div class="hero-img-wrap">
+      <img
+        src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=500&h=500&q=80"
+        alt="חוויית הקנייה במרכולית - אישה בחנות מכולת"
+        loading="eager"
+        onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&h=500&q=80'"
+      />
+    </div>
+
+    <!--
+      Hero text sits on the LEFT side (second in RTL flex).
+      Text inside is right-aligned by RTL default. ✓
+    -->
+    <div class="hero-text">
+      <h1 class="hero-title">מרכולית</h1>
+      <p class="hero-subtitle">חוויית כפרית</p>
+      <p class="hero-desc">
+        מוצרים טריים, איכות ושירות עם חיוך<br>
+        כל השבוע בשבילך
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Farm/countryside landscape SVG -->
+  <svg
+    class="landscape-svg"
+    viewBox="0 0 800 140"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#3D8B62" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#1A6147" stop-opacity="0.45"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Back layer hills -->
+    <path d="M0,100 Q80,55 180,82 Q280,108 380,62 Q480,24 580,68 Q680,105 800,58 L800,140 L0,140 Z"
+          fill="#9EC9AC" opacity="0.28"/>
+
+    <!-- Main hills -->
+    <path d="M0,112 Q70,80 160,97 Q250,116 340,84 Q430,56 520,88 Q610,116 700,82 Q760,62 800,90 L800,140 L0,140 Z"
+          fill="url(#hillGrad)"/>
+
+    <!-- House 1 (left area) -->
+    <rect x="28" y="90" width="32" height="24" fill="#2A7A52" opacity="0.65" rx="1"/>
+    <polygon points="28,90 44,72 60,90" fill="#1A6147" opacity="0.82"/>
+    <rect x="36" y="96" width="9"  height="13" fill="#F5F0E3" opacity="0.35"/>
+    <!-- chimney -->
+    <rect x="50" y="76" width="4" height="8" fill="#1A6147" opacity="0.7"/>
+
+    <!-- Silo -->
+    <rect x="70" y="82" width="15" height="32" fill="#2A7A52" opacity="0.55" rx="3"/>
+    <ellipse cx="77" cy="82" rx="7.5" ry="4" fill="#1A6147" opacity="0.65"/>
+
+    <!-- Tree cluster left -->
+    <rect x="96" y="104" width="5" height="22" fill="#2A7A52" opacity="0.55"/>
+    <ellipse cx="98" cy="97" rx="15" ry="13" fill="#1A6147" opacity="0.42"/>
+    <rect x="116" y="108" width="4" height="18" fill="#2A7A52" opacity="0.5"/>
+    <ellipse cx="118" cy="103" rx="12" ry="11" fill="#1A6147" opacity="0.38"/>
+
+    <!-- Small barn -->
+    <rect x="190" y="96" width="22" height="18" fill="#2A7A52" opacity="0.55" rx="1"/>
+    <polygon points="190,96 201,82 212,96" fill="#1A6147" opacity="0.75"/>
+
+    <!-- House 2 (center) -->
+    <rect x="330" y="84" width="40" height="30" fill="#2A7A52" opacity="0.65" rx="1"/>
+    <polygon points="330,84 350,64 370,84" fill="#1A6147" opacity="0.82"/>
+    <rect x="340" y="91" width="11" height="15" fill="#F5F0E3" opacity="0.35"/>
+    <rect x="356" y="91" width="8"  height="11" fill="#F5F0E3" opacity="0.3"/>
+    <!-- chimney -->
+    <rect x="362" y="68" width="4" height="9" fill="#1A6147" opacity="0.7"/>
+
+    <!-- Tree center-right -->
+    <rect x="386" y="98" width="5" height="26" fill="#2A7A52" opacity="0.52"/>
+    <ellipse cx="388" cy="90" rx="17" ry="14" fill="#1A6147" opacity="0.4"/>
+    <rect x="408" y="103" width="4" height="20" fill="#2A7A52" opacity="0.48"/>
+    <ellipse cx="410" cy="97" rx="13" ry="11" fill="#1A6147" opacity="0.36"/>
+
+    <!-- Windmill -->
+    <rect x="572" y="60" width="5" height="54" fill="#2A7A52" opacity="0.58" rx="2"/>
+    <!-- blades -->
+    <line x1="574" y1="72" x2="574" y2="50"  stroke="#1A6147" stroke-width="2.5" opacity="0.65"/>
+    <line x1="574" y1="72" x2="594" y2="80"  stroke="#1A6147" stroke-width="2.5" opacity="0.65"/>
+    <line x1="574" y1="72" x2="555" y2="80"  stroke="#1A6147" stroke-width="2.5" opacity="0.65"/>
+    <line x1="574" y1="72" x2="595" y2="62"  stroke="#1A6147" stroke-width="2.5" opacity="0.55"/>
+    <circle cx="574" cy="72" r="4.5" fill="#1A6147" opacity="0.8"/>
+
+    <!-- House 3 (right) -->
+    <rect x="665" y="74" width="36" height="28" fill="#2A7A52" opacity="0.65" rx="1"/>
+    <polygon points="665,74 683,54 701,74" fill="#1A6147" opacity="0.82"/>
+    <rect x="675" y="81" width="10" height="14" fill="#F5F0E3" opacity="0.35"/>
+
+    <!-- Tree right cluster -->
+    <rect x="712" y="88" width="5" height="24" fill="#2A7A52" opacity="0.52"/>
+    <ellipse cx="714" cy="82" rx="15" ry="13" fill="#1A6147" opacity="0.4"/>
+    <rect x="732" y="93" width="4" height="18" fill="#2A7A52" opacity="0.48"/>
+    <ellipse cx="734" cy="88" rx="11" ry="10" fill="#1A6147" opacity="0.36"/>
+
+    <!-- Fence line -->
+    <path d="M0,134 L800,134" stroke="#2A7A52" stroke-width="1.5" opacity="0.18"/>
+    <!-- Fence posts -->
+    <line x1="40"  y1="127" x2="40"  y2="137" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="88"  y1="127" x2="88"  y2="137" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="136" y1="128" x2="136" y2="138" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="184" y1="126" x2="184" y2="136" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="232" y1="126" x2="232" y2="136" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="280" y1="126" x2="280" y2="136" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="380" y1="124" x2="380" y2="134" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="460" y1="123" x2="460" y2="133" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="540" y1="124" x2="540" y2="134" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="620" y1="123" x2="620" y2="133" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="700" y1="122" x2="700" y2="132" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+    <line x1="760" y1="122" x2="760" y2="132" stroke="#2A7A52" stroke-width="2" opacity="0.25"/>
+  </svg>
+</section>
+
+
+<!-- ══ FEATURE CARDS ══ -->
+<section class="features" aria-label="יתרונות מרכולית">
+
+  <!-- RTL grid: right-most item in HTML appears on the RIGHT -->
+
+  <!-- 1. תוצרת טריה כל יום (rightmost) -->
+  <div class="feat-card">
+    <svg class="feat-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor"
+         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- Apple body -->
+      <path d="M12 22 C12 13 18 10 24 10 C30 10 36 13 36 22 C36 32 30 40 24 40 C18 40 12 32 12 22 Z"/>
+      <!-- Stem -->
+      <path d="M24 10 C24 8 26 5.5 30 6"/>
+      <!-- Leaf -->
+      <path d="M24 10 C22 7 19 7 18 9"/>
+      <!-- Crease -->
+      <path d="M24 10 L24 15" stroke-width="1.2"/>
+    </svg>
+    <span class="feat-label">תוצרת טריה<br>כל יום</span>
+  </div>
+
+  <!-- 2. מחירים הוגנים -->
+  <div class="feat-card">
+    <svg class="feat-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor"
+         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- Tag body -->
+      <path d="M8 8 L8 28 L26 46 L46 26 L28 8 Z"/>
+      <!-- Hole -->
+      <circle cx="18" cy="18" r="3" stroke-width="1.8"/>
+      <!-- Price lines -->
+      <line x1="24" y1="30" x2="34" y2="30" stroke-width="1.6"/>
+      <line x1="26" y1="35" x2="34" y2="35" stroke-width="1.4" stroke-opacity="0.6"/>
+    </svg>
+    <span class="feat-label">מחירים<br>הוגנים</span>
+  </div>
+
+  <!-- 3. הצטרפו למועדון ההטבות -->
+  <div class="feat-card">
+    <img class="feat-icon feat-icon-img" src="assets/images/join_the_club.png" alt="" decoding="async" />
+    <span class="feat-label">הצטרפו למועדון<br>ההטבות</span>
+  </div>
+
+  <!-- 4. בשרים איכותיים (leftmost) -->
+  <div class="feat-card">
+    <svg class="feat-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <!-- Outer circle -->
+      <circle cx="24" cy="24" r="19" stroke="currentColor" stroke-width="1.8"/>
+      <!-- Inner dashed ring -->
+      <circle cx="24" cy="24" r="14" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3.2 2.2"/>
+      <!-- Star/badge ornament -->
+      <path d="M24 11 L25.8 17.4 L32.5 17.4 L27.1 21.3 L29 27.6 L24 23.7 L19 27.6 L20.9 21.3 L15.5 17.4 L22.2 17.4 Z"
+            stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+      <!-- Text inside stamp -->
+      <text x="24" y="36" text-anchor="middle"
+            font-size="5.5" fill="currentColor" font-family="Heebo,Arial,sans-serif" font-weight="700">
+        מהדרין
+      </text>
+    </svg>
+    <span class="feat-label">בשרים<br>איכותיים</span>
+  </div>
+
+</section>
+
+
+<!-- ══ CONTENT SECTIONS ══ -->
+<main class="sections-wrap">
+
+  <!-- ── מוצרים טריים ── -->
+  <article class="sec-card">
+    <!--
+      RTL flex: sec-text first → RIGHT side ✓
+      sec-img  second → LEFT  side ✓
+    -->
+    <div class="sec-text">
+      <h2 class="sec-title">מוצרים טריים</h2>
+      <p class="sec-desc">בשרים, פירות וירקות מהקלאים ועוד...</p>
+      <a href="#" class="btn-green">למגוון המלא</a>
+    </div>
+    <div class="sec-img">
+      <img
+        src="https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=320&h=220&q=80"
+        alt="מוצרים טריים - בשרים וירקות"
+        loading="lazy"
+        onerror="this.src='https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=320&h=220&q=80'"
+      />
+    </div>
+  </article>
+
+  <!-- ── מבצעים מתחדשים ── -->
+  <article class="sec-card">
+    <div class="sec-text">
+      <h2 class="sec-title">מבצעים מתחדשים</h2>
+      <p class="sec-desc">כל שבוע מבצע שלישוק בשבילך</p>
+      <a href="#" class="btn-green">שלישוק במרכולית</a>
+    </div>
+    <div class="sec-img">
+      <img
+        src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=320&h=220&q=80"
+        alt="מבצעים - סל ירקות ופירות"
+        loading="lazy"
+      />
+      <!-- % badge -->
+      <div class="badge-pct" aria-hidden="true">%</div>
+    </div>
+  </article>
+
+  <!-- ── דרושים ── -->
+  <article class="sec-card" style="position:relative; overflow:hidden;">
+    <!-- Subtle people watermark behind text -->
+    <div class="jobs-watermark" aria-hidden="true">
+      <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" style="width:60px;height:60px;color:var(--green)">
+        <!-- 3 person silhouettes -->
+        <circle cx="20" cy="16" r="7"/>
+        <path d="M6 48 Q6 34 20 34 Q34 34 34 48"/>
+        <circle cx="40" cy="12" r="6"/>
+        <path d="M28 44 Q28 32 40 32 Q52 32 52 44"/>
+        <circle cx="58" cy="16" r="7"/>
+        <path d="M44 48 Q44 34 58 34 Q72 34 72 48"/>
+      </svg>
+    </div>
+
+    <div class="sec-text">
+      <h2 class="sec-title">דרושים</h2>
+      <p class="sec-desc">למגוון תפקידים.<br>שכר הוגן ואפשרויות קידום</p>
+      <a href="#" class="btn-green">בואו לעבוד אצלנו</a>
+    </div>
+
+    <!-- Branded green tote bag (SVG illustration) -->
+    <div class="sec-img">
+      <div class="jobs-img-inner">
+        <svg viewBox="0 0 110 130" aria-label="שקית מרכולית" style="width:90%; max-width:100px;">
+          <!-- Bag body -->
+          <path d="M12 42 Q11 38 16 38 L94 38 Q99 38 98 42 L105 122 Q106 128 100 128 L10 128 Q4 128 5 122 Z"
+                fill="#1A5C40"/>
+          <!-- Bag top edge -->
+          <rect x="10" y="36" width="90" height="6" fill="#155236" rx="2"/>
+          <!-- Handles -->
+          <path d="M34 38 Q34 16 55 16 Q76 16 76 38"
+                stroke="#C5D9C8" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <!-- Brand name -->
+          <text x="55" y="76" text-anchor="middle"
+                font-size="12" fill="white" font-family="Heebo,Arial,sans-serif" font-weight="900"
+                letter-spacing="-0.3">
+            מרכולית
+          </text>
+          <!-- Subtitle -->
+          <text x="55" y="90" text-anchor="middle"
+                font-size="7" fill="#9FC8B0" font-family="Heebo,Arial,sans-serif" font-weight="400">
+            חוויית כפרית
+          </text>
+          <!-- Small tractor -->
+          <text x="55" y="108" text-anchor="middle"
+                font-size="15" font-family="Arial,sans-serif">
+            🚜
+          </text>
+          <!-- Stitching line -->
+          <path d="M22 50 L88 50" stroke="#9FC8B0" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.5"/>
+          <path d="M22 120 L88 120" stroke="#9FC8B0" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+  </article>
+
+</main>
+
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <a href="#">מדיניות פרטיות ותנאי שימוש</a>
+  <span class="fsep">|</span>
+  <a href="#">צור קשר</a>
+  <span class="fsep">|</span>
+  <a href="#">דרושים</a>
+</footer>
+
+
+<script>
+  function syncSliceOffsets() {
+    const stage = document.querySelector('.svg-stage');
+    if (!stage) return;
+    const stageWidth = stage.clientWidth;
+    document.querySelectorAll('.svg-slice').forEach(slice => {
+      const y = Number(slice.dataset.y || 0);
+      const art = slice.querySelector('.base-art');
+      if (!art) return;
+      art.style.width = `${stageWidth}px`;
+      const xShift = 0;
+      art.style.transform = `translateX(${xShift}px) translateY(${-y * stageWidth / 648}px)`;
+    });
+  }
+
+  window.addEventListener('resize', syncSliceOffsets);
+  window.addEventListener('load', syncSliceOffsets);
+
+  /** ריענון מלא (F5): אחרי קישור פנימי נשאר #fragment בכתובת והדפדפן גולל לאמצע — חוזרים לראש */
+  function scrollTopOnReload() {
+    let reload = false;
+    try {
+      const entry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if (entry && entry.type === 'reload') reload = true;
+      else if (performance.navigation && performance.navigation.type === 1) reload = true;
+    } catch (_) {}
+    if (!reload) return;
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      if (location.hash) {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    });
+  }
+  window.addEventListener('load', scrollTopOnReload);
+
+  /* Mobile nav toggle */
+  function openNav() {
+    document.getElementById('navMobile').classList.add('open');
+    document.getElementById('navOverlay').classList.add('open');
+    document.getElementById('menuBtn').setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeNav() {
+    document.getElementById('navMobile').classList.remove('open');
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  /* Keyboard: Escape closes mobile nav */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeNav();
+  });
+
+  /* ══ MOBILE FIGURE FIX — JavaScript חסין cascade ══
+     מיישם IMAGE SLOT PATTERN (position:absolute;inset:0) ישירות על DOM
+     פועל כאשר viewport ≤ 720px — מבטיח תמונות אחידות */
+  function applyMobileFigures() {
+    if (window.innerWidth > 599) return;
+    var FIGURE_H = 158;
+    var BG = '#f0e3c7';
+    var POS_Y = { deals: 50, fresh: 50, jobs: 20 };
+    var WIDTHS = { deals: 69, fresh: 100, jobs: 100 };
+    ['deals','fresh','jobs'].forEach(function(id) {
+      var fig = document.querySelector('#' + id + ' .section-card-figure');
+      if (!fig) return;
+      var w = WIDTHS[id];
+      var marginPct = (100 - w) / 2;
+      fig.style.setProperty('position','relative','important');
+      fig.style.setProperty('width', w + '%','important');
+      fig.style.setProperty('max-width', w + '%','important');
+      fig.style.setProperty('margin-left', 'calc(' + marginPct + '% - 9px)','important');
+      fig.style.setProperty('margin-right', 'calc(' + marginPct + '% + 9px)','important');
+      fig.style.setProperty('height', FIGURE_H + 'px','important');
+      fig.style.setProperty('min-height', FIGURE_H + 'px','important');
+      fig.style.setProperty('flex','0 0 ' + FIGURE_H + 'px','important');
+      fig.style.setProperty('transform','none','important');
+      fig.style.setProperty('overflow','hidden','important');
+      fig.style.setProperty('border-radius','0','important');
+      fig.style.setProperty('background', BG,'important');
+      var img = fig.querySelector('img');
+      if (!img) return;
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+      img.style.setProperty('display','block','important');
+      img.style.setProperty('position','absolute','important');
+      img.style.setProperty('inset','0','important');
+      img.style.setProperty('width','100%','important');
+      img.style.setProperty('height','100%','important');
+      img.style.setProperty('max-height','100%','important');
+      img.style.setProperty('aspect-ratio','unset','important');
+      img.style.setProperty('object-fit', 'contain','important');
+      img.style.setProperty('object-position','50% ' + POS_Y[id] + '%','important');
+      img.style.setProperty('background', BG,'important');
+      img.style.setProperty('transform','scale(1)','important');
+      img.style.setProperty('filter','none','important');
+    });
+  }
+  window.addEventListener('load', applyMobileFigures);
+  window.addEventListener('resize', applyMobileFigures);
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     BRANCHES MODAL — opens on any [href="#branches"] click
+     Shows branch list (left) + map+nav (right). Mobile: stacked.
+     Branches data placeholder — update with real markolit branch info.
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .br-modal { display:none !important; position:fixed; inset:0; z-index:9999; }
+  .br-modal[data-open="true"] { display:block !important; }
+  .br-modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter: blur(2px); }
+  .br-modal-box {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 980px); max-width:980px; max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+    font-family:'Heebo','Arial',sans-serif;
+  }
+  .br-modal-header {
+    padding:18px 22px 10px; position:relative;
+    border-bottom:1px solid rgba(26,97,71,.12);
+  }
+  .br-modal-close {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .br-modal-close:hover { background:#f0e7d0; }
+  .br-modal-title {
+    margin:0; text-align:center; color:#1A6147; font-size:1.4rem; font-weight:900;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .br-modal-sub { margin:4px 0 0; text-align:center; color:#666; font-size:0.78rem; }
+  .br-modal-body {
+    display:grid; grid-template-columns:340px 1fr; gap:16px;
+    padding:14px 18px 18px; overflow:auto; flex:1;
+  }
+  .br-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; overflow:auto; }
+  .br-item {
+    background:#fff; border:1px solid #E2DBC8; border-radius:14px;
+    padding:14px 16px; cursor:pointer; position:relative;
+    transition: background .15s, border-color .15s;
+  }
+  .br-item:hover { background:#F5F0E3; }
+  .br-item.active { background:linear-gradient(180deg,#D7EAD9,#C7E1CA); border-color:#1A6147; }
+  .br-item-name { font-weight:800; color:#0F4E37; font-size:0.95rem; }
+  .br-item-phone { color:#1A6147; font-size:0.85rem; margin-top:2px; font-feature-settings:"tnum"; }
+  .br-item-area { color:#666; font-size:0.75rem; margin-top:2px; }
+  .br-item-arrow {
+    position:absolute; top:50%; left:14px; transform:translateY(-50%);
+    width:26px; height:26px; border-radius:50%;
+    background:#1A6147; color:#fff; font-size:14px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .br-item:not(.active) .br-item-arrow { background:#E2DBC8; color:#888; }
+  .br-detail { display:flex; flex-direction:column; gap:10px; min-width:0; }
+  .br-detail-head { display:flex; flex-direction:column; gap:4px; padding:0 4px; }
+  .br-detail-name { margin:0; color:#1A6147; font-size:1.6rem; font-weight:900; text-align:center; }
+  .br-detail-row { display:flex; gap:14px; color:#1A6147; font-size:0.85rem; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .br-detail-row a { color:inherit; text-decoration:none; }
+  .br-map-wrap {
+    flex:1; min-height:240px; background:#F5F0E3; border-radius:14px; overflow:hidden;
+    border:1px dashed rgba(26,97,71,.25);
+  }
+  .br-map-wrap iframe { width:100%; height:100%; min-height:240px; border:0; display:block; }
+  .br-waze-btn {
+    background:#1A6147; color:#fff; padding:14px 18px; border-radius:12px;
+    text-align:center; text-decoration:none; font-weight:800; font-size:1rem;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition: background .15s;
+  }
+  .br-waze-btn:hover { background:#0F4E37; }
+  .br-waze-btn::before { content:'➤'; transform:rotate(180deg); }
+
+  @media (max-width: 720px) {
+    .br-modal-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .br-modal-body { grid-template-columns:1fr; gap:10px; padding:10px 12px 14px; }
+    .br-modal-title { font-size:1.15rem; }
+    .br-list { max-height:38vh; flex-direction:row; overflow-x:auto; padding-bottom:4px; }
+    .br-item { min-width:200px; }
+    .br-item-arrow { display:none; }
+    .br-detail-name { font-size:1.25rem; }
+    .br-map-wrap { min-height:200px; }
+    .br-map-wrap iframe { min-height:200px; }
+  }
+</style>
+
+<div class="br-modal" id="branches-modal" role="dialog" aria-modal="true" aria-labelledby="br-modal-title">
+  <div class="br-modal-backdrop" onclick="MarkBranchesModal.close()"></div>
+  <div class="br-modal-box">
+    <header class="br-modal-header">
+      <button class="br-modal-close" onclick="MarkBranchesModal.close()" aria-label="סגור">×</button>
+      <h2 class="br-modal-title" id="br-modal-title">📍 הסניפים שלנו</h2>
+      <p class="br-modal-sub">בחרו סניף לצפייה במפה ולניווט</p>
+    </header>
+    <div class="br-modal-body">
+      <ul class="br-list" id="br-list" role="listbox" aria-label="רשימת סניפים"></ul>
+      <section class="br-detail">
+        <div class="br-detail-head">
+          <h3 class="br-detail-name" id="br-name"></h3>
+          <div class="br-detail-row">
+            <span id="br-area"></span>
+            <a id="br-phone-link" href="#"></a>
+          </div>
+        </div>
+        <div class="br-map-wrap">
+          <iframe id="br-map" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="מפת סניף"></iframe>
+        </div>
+        <a id="br-waze" class="br-waze-btn" target="_blank" rel="noopener">נווט עם Waze</a>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Real branches — סופר תלם אגודה שיתופית חקלאית בע"מ (ע.מ. 570067041)
+  const BRANCHES = [
+    { id:'tel-yitzhak',  name:'תל יצחק',   phone:'09-8994428',  area:'קיבוץ תל יצחק',     address:'קיבוץ תל יצחק' },
+    { id:'beit-yitzhak', name:'בית יצחק',  phone:'09-8876345',  area:'מושב בית יצחק',     address:'מושב בית יצחק' },
+    { id:'batzra',       name:'בצרה',     phone:'09-7404483',  area:'מושב בצרה',         address:'מושב בצרה' },
+    { id:'givat-ada',    name:'גבעת עדה',  phone:'04-8616530',  area:'הדקל 51, גבעת עדה', address:'הדקל 51, גבעת עדה' },
+    { id:'zichron',      name:'זכרון יעקב', phone:'073-3161536', area:'הנדיב 45, זכרון יעקב', address:'הנדיב 45, זכרון יעקב' },
+  ];
+  let active = BRANCHES[0].id;
+  const $ = id => document.getElementById(id);
+
+  function renderList(){
+    $('br-list').innerHTML = BRANCHES.map(b => `
+      <li class="br-item${b.id===active?' active':''}" role="option" aria-selected="${b.id===active}" tabindex="0" data-id="${b.id}">
+        <div class="br-item-name">${b.name}</div>
+        <div class="br-item-phone">${b.phone}</div>
+        <div class="br-item-area">${b.area}</div>
+        <span class="br-item-arrow">›</span>
+      </li>
+    `).join('');
+  }
+
+  function paintDetail(){
+    const b = BRANCHES.find(x => x.id===active); if(!b) return;
+    $('br-name').textContent = b.name;
+    $('br-area').textContent = b.address;
+    const phoneLink = $('br-phone-link');
+    phoneLink.textContent = '☎ ' + b.phone;
+    phoneLink.href = 'tel:' + b.phone.replace(/[^0-9+]/g,'');
+    const q = encodeURIComponent(b.address);
+    $('br-map').src = `https://maps.google.com/maps?q=${q}&hl=he&z=14&output=embed`;
+    $('br-waze').href = `https://waze.com/ul?q=${q}&navigate=yes`;
+  }
+
+  function select(id){ active = id; renderList(); paintDetail(); }
+  function open(){
+    renderList(); paintDetail();
+    $('branches-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>{ const a = document.querySelector('.br-item.active'); if(a) a.focus(); }, 50);
+  }
+  function close(){
+    $('branches-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+    $('br-map').src = 'about:blank'; // free iframe
+  }
+
+  // Event delegation: list clicks + keyboard
+  $('br-list').addEventListener('click', e => {
+    const li = e.target.closest('.br-item'); if(!li) return;
+    select(li.dataset.id);
+  });
+  $('br-list').addEventListener('keydown', e => {
+    if(e.key!=='Enter' && e.key!==' ') return;
+    const li = e.target.closest('.br-item'); if(!li) return;
+    e.preventDefault(); select(li.dataset.id);
+  });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
+
+  // Wire up all branches triggers — match by href, aria-label, or visible text
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#branches' || aria==='סניפים' || txt==='סניפים'){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true); // capture phase — beats inline onclick="closeNav()"
+
+  window.MarkBranchesModal = { open, close, select };
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PRIVACY POLICY MODAL — opens on any "מדיניות פרטיות" link
+     Source: PDF (10 May 2026), 16 sections, Rubik font
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .pp-modal { display:none !important; position:fixed; inset:0; z-index:9999; font-family:'Rubik','Heebo','Arial',sans-serif; }
+  .pp-modal[data-open="true"] { display:block !important; }
+  .pp-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px); }
+  .pp-box {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 760px); max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+  }
+  .pp-header {
+    padding:20px 22px 14px; position:relative; text-align:center;
+    border-bottom:1px solid rgba(26,97,71,.12); flex-shrink:0;
+  }
+  .pp-close-x {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pp-close-x:hover { background:#f0e7d0; }
+  .pp-title {
+    margin:0; color:#1A6147; font-size:1.45rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .pp-title-icon {
+    width:24px; height:24px; flex-shrink:0;
+    fill:none; stroke:#1A6147; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .pp-sub { margin:6px 0 0; color:#666; font-size:0.78rem; font-weight:400; }
+  .pp-body {
+    flex:1; overflow-y:auto; padding:18px 26px 18px; min-height:0;
+    background:#F0EBD8; margin:14px 18px 0; border-radius:14px;
+    border:1px solid rgba(26,97,71,.12);
+  }
+  .pp-body p { margin:0 0 10px; color:#2c2c2c; font-size:0.88rem; line-height:1.7; font-weight:400; }
+  .pp-body p.pp-lead { font-weight:500; color:#1A6147; margin-bottom:14px; }
+  .pp-body h3 { color:#1A6147; font-size:1rem; font-weight:700; margin:18px 0 8px; line-height:1.3; }
+  .pp-body h3:first-child { margin-top:0; }
+  .pp-body ul { padding-inline-start:22px; margin:0 0 12px; }
+  .pp-body ul li { margin:0 0 6px; color:#2c2c2c; font-size:0.88rem; line-height:1.65; }
+  .pp-body strong { color:#1A6147; font-weight:600; }
+  .pp-body a { color:#1A6147; text-decoration:underline; }
+  footer.pp-footer, .pp-footer {
+    padding:14px 22px 18px; flex-shrink:0;
+    display:flex; flex-direction:column; gap:10px; align-items:center;
+    border-top:1px solid rgba(26,97,71,.12);
+    background:transparent; color:#2c2c2c;
+    font-size:inherit; text-align:center;
+  }
+  .pp-disclaimer { margin:0; color:#666; font-size:0.78rem; text-align:center; line-height:1.5; }
+  .pp-close-btn {
+    background:#1A6147; color:#fff; border:0; padding:10px 44px; border-radius:10px;
+    font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer;
+    transition:background .15s; min-width:150px;
+  }
+  .pp-close-btn:hover { background:#0F4E37; }
+
+  @media (max-width: 720px) {
+    .pp-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .pp-title { font-size:1.15rem; }
+    .pp-body { margin:10px 12px 0; padding:14px 16px; font-size:0.85rem; }
+    .pp-body h3 { font-size:0.95rem; margin:14px 0 6px; }
+    .pp-body p, .pp-body ul li { font-size:0.85rem; line-height:1.65; }
+    .pp-footer { padding:12px 16px 14px; }
+    .pp-close-btn { padding:9px 36px; font-size:0.9rem; min-width:130px; }
+    .pp-close-x { top:10px; left:10px; width:30px; height:30px; font-size:20px; }
+  }
+</style>
+
+<div class="pp-modal" id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="pp-title">
+  <div class="pp-backdrop" onclick="MarkPrivacyModal.close()"></div>
+  <div class="pp-box">
+    <header class="pp-header">
+      <button class="pp-close-x" onclick="MarkPrivacyModal.close()" aria-label="סגור">×</button>
+      <h2 class="pp-title" id="pp-title">
+        <svg class="pp-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z"/>
+        </svg>
+        מדיניות פרטיות
+      </h2>
+      <p class="pp-sub">עודכן לאחרונה: 10 במאי 2026</p>
+    </header>
+    <div class="pp-body" tabindex="0">
+      <p class="pp-lead">סופר תלם אגודה שיתופית חקלאית בע״מ, מספר תאגיד 570067041, שכתובתה בקיבוץ תל יצחק (להלן: "החברה"), הינה בעלת השליטה במאגרי המידע כהגדרת מונח זה בחוק הגנת הפרטיות, ככל שמאגרים כאמור מנוהלים על ידה.</p>
+      <p>מדיניות זו מנוסחת בהתאם להוראות חוק הגנת הפרטיות, לרבות תיקון מס׳ 13, תקנות הגנת הפרטיות (אבטחת מידע), התשע״ז–2017, וחוק התקשורת (בזק ושידורים), התשמ״ב–1982, ככל שהם חלים על פעילות החברה.</p>
+
+      <h3>1. כללי וזהות בעל השליטה במאגר</h3>
+      <p>החברה מכבדת את פרטיות המשתמשים באתרי האינטרנט, בשירותים הדיגיטליים, בטפסי יצירת קשר, במועדוני לקוחות ובכל שירות אחר המופעל על ידה או עבורה.</p>
+
+      <h3>2. בסיס חוקי לעיבוד מידע</h3>
+      <p>החברה מעבדת מידע אישי על בסיס אחד או יותר מהבאים:</p>
+      <ul>
+        <li>עיבוד הנדרש לצורך מתן שירותים, ניהול התקשרות או מענה לפנייה.</li>
+        <li>עמידה בחובה חוקית החלה על החברה.</li>
+        <li>אינטרס לגיטימי של החברה, בכפוף לאיזון עם זכויות נושא המידע.</li>
+        <li>הסכמה מפורשת של נושא המידע, מקום שבו נדרשת הסכמה לפי דין.</li>
+      </ul>
+      <p>השימוש באתר או בשירות כשלעצמו אינו מהווה הסכמה כללית לעיבוד מידע מעבר לנדרש להפעלתו או למטרה שלשמה נמסר המידע.</p>
+
+      <h3>3. סוגי מידע שנאסף</h3>
+      <p>החברה עשויה לעבד את סוגי המידע הבאים:</p>
+      <ul>
+        <li>מידע שנמסר ישירות על ידי המשתמש, לרבות שם פרטי, שם משפחה, כתובת דוא״ל, מספר טלפון, תוכן פנייה, פרטים הנמסרים במסגרת טפסי יצירת קשר, הצטרפות למועדון לקוחות או קבלת שירות.</li>
+        <li>מידע תפעולי הנדרש לניהול שירותים, פניות, הטבות, מועדון לקוחות או התקשרויות עם לקוחות וספקים.</li>
+        <li>מידע טכני, לרבות כתובת IP, סוג דפדפן, זמני גישה, דפים נצפים, נתוני אבטחה ולוגים.</li>
+        <li>מידע הנאסף באמצעות עוגיות (Cookies), ככל שנעשה בהן שימוש.</li>
+        <li>מידע מספקי שירות חיצוניים, ככל שהדבר נדרש לצורך מתן השירותים או תפעול מערכות החברה.</li>
+      </ul>
+      <p>החברה אינה אוספת ביודעין מידע בעל רגישות מיוחדת כהגדרתו בחוק, אלא אם הדבר נמסר ביוזמת נושא המידע או נדרש לפי דין או לצורך מתן שירות מסוים.</p>
+
+      <h3>4. מטרות עיבוד המידע</h3>
+      <ul>
+        <li>מתן שירותים וטיפול בפניות.</li>
+        <li>ניהול ותפעול האתר, השירותים הדיגיטליים ומועדון הלקוחות, ככל שקיים.</li>
+        <li>שיפור חוויית המשתמש, השירותים והמערכות.</li>
+        <li>ניתוח סטטיסטי פנימי, ככל האפשר באופן שאינו מזהה.</li>
+        <li>שיווק, דיוור ושליחת הודעות פרסומיות או שירותיות — בכפוף להסכמה מפורשת כאשר נדרשת הסכמה לפי דין.</li>
+        <li>עמידה בדרישות הדין, ניהול הליכים, מניעת הונאות והגנה על זכויות החברה.</li>
+      </ul>
+
+      <h3>5. עוגיות (Cookies)</h3>
+      <p>האתר עשוי לעשות שימוש בעוגיות חיוניות הנדרשות להפעלתו התקינה, אבטחתו ושיפור חוויית השימוש. עוגיות שאינן חיוניות, לרבות עוגיות מדידה, סטטיסטיקה או שיווק, יופעלו רק בהתאם להוראות הדין ולאחר קבלת הסכמה מפורשת, ככל שנדרשת הסכמה כאמור.</p>
+
+      <h3>6. עיבוד אוטומטי ובינה מלאכותית</h3>
+      <p>החברה עשויה לעשות שימוש בכלים אוטומטיים לצורכי תפעול, אבטחה, ניתוח ושיפור השירות.</p>
+      <p>לא מתקבלות החלטות בעלות השלכות משפטיות או כלכליות מהותיות על אדם אך ורק על בסיס עיבוד אוטומטי, אלא אם הדבר הותר לפי דין ונמסרה הודעה מתאימה.</p>
+
+      <h3>7. אבטחת מידע</h3>
+      <p>החברה מיישמת אמצעי אבטחת מידע בהתאם לתקנות הגנת הפרטיות (אבטחת מידע), ברמת אבטחה התואמת את מאפייני המאגר, סוג המידע, היקפו והסיכונים הכרוכים בעיבודו.</p>
+      <p>מידע עשוי להיות מאוחסן ומעובד על גבי מערכות, שרתים וספקי שירות טכנולוגיים המשמשים כמחזיקי מידע מטעם החברה, וזאת בכפוף להתחייבויות מתאימות לשמירת סודיות ואבטחת מידע.</p>
+      <p>במקרה של אירוע אבטחה חמור, תפעל החברה בהתאם לחובות הדיווח והטיפול הקבועות בדין.</p>
+
+      <h3>8. העברת מידע לצדדים שלישיים</h3>
+      <p><strong>החברה אינה מוכרת מידע אישי.</strong></p>
+      <p>מידע אישי יועבר לצדדים שלישיים רק במקרים הבאים:</p>
+      <ul>
+        <li>בהסכמת נושא המידע.</li>
+        <li>לצורך קבלת שירותים תפעוליים, כגון אחסון, תחזוקה, מערכות מידע, דיוור, שירותי סליקה או תמיכה, ככל שרלוונטי.</li>
+        <li>על פי חובה חוקית, דרישת רשות מוסמכת או צו שיפוטי.</li>
+        <li>לצורך הגנה על זכויות החברה, לקוחותיה או צדדים שלישיים.</li>
+        <li>במסגרת שינוי מבני, מיזוג, העברת פעילות או העברת נכסים, בכפוף לדין.</li>
+      </ul>
+
+      <h3>9. העברת מידע מחוץ לישראל</h3>
+      <p>ככל שמידע יועבר מחוץ לישראל, הדבר ייעשה בהתאם לדין, על בסיס החלטת התאמה, התחייבויות חוזיות מתאימות, הוראות דין רלוונטיות או הסכמה מפורשת של נושא המידע, לפי העניין.</p>
+
+      <h3>10. שמירת מידע</h3>
+      <p>המידע יישמר לפרקי זמן מידתיים בהתאם למטרות שלשמן נאסף, להוראות הדין ולצרכים תפעוליים ומשפטיים של החברה:</p>
+      <ul>
+        <li>פרטי התקשרות ופניות — למשך התקופה הדרושה לטיפול בפנייה ולתיעוד סביר, או לפי דין.</li>
+        <li>נתוני שימוש באתר — עד 12 חודשים, אלא אם נדרש אחרת מטעמי אבטחה, תיעוד או דין.</li>
+        <li>מידע שיווקי — עד לביטול ההסכמה או בהתאם להוראות הדין.</li>
+        <li>מידע הנדרש לצורך עמידה בחובות חוקיות, חשבונאיות או משפטיות — למשך התקופה הנדרשת לפי דין.</li>
+      </ul>
+      <p>בתום תקופת השמירה, המידע יימחק או יעבור אנונימיזציה, ככל שהדבר אפשרי וסביר בנסיבות העניין. למעט פרטים בסיסיים של החברות במועדון כגון שם וטלפון ולעיתים כתובת מייל.</p>
+
+      <h3>11. זכויות נושאי מידע</h3>
+      <p>לנושאי המידע עומדות הזכויות הקבועות בדין, לרבות:</p>
+      <ul>
+        <li>זכות עיון במידע.</li>
+        <li>זכות לבקש תיקון מידע שאינו נכון, שלם, ברור או מעודכן.</li>
+        <li>זכות לבקש מחיקה, בכפוף להוראות הדין ולצרכים לגיטימיים של החברה.</li>
+        <li>זכות להתנגד לעיבוד מסוים, ככל שקיימת זכות כזו לפי דין.</li>
+        <li>זכות לבטל הסכמה לקבלת דיוור שיווקי בכל עת, כאשר העיבוד מבוסס על הסכמה.</li>
+      </ul>
+      <p>בקשות בנושא זכויות נושאי מידע ניתן להפנות לאיש הקשר לפניות בנושא פרטיות המפורט בסעיף 12 להלן. החברה תשיב לפנייה בתוך 30 ימים, בכפוף לאימות זהות ולמגבלות הדין.</p>
+
+      <h3>12. איש קשר לפניות בנושא פרטיות</h3>
+      <p>החברה מינתה איש קשר לפניות בנושא פרטיות:</p>
+      <ul>
+        <li><strong>שם:</strong> טובה</li>
+        <li><strong>טלפון:</strong> <a href="tel:0733161538">073-3161538</a></li>
+        <li><strong>Email:</strong> <a href="mailto:tova@markolitly.co.il">tova@markolitly.co.il</a></li>
+        <li><strong>כתובת למשלוח דואר:</strong> סופר תלם אגודה שיתופית חקלאית בע״מ, קיבוץ תל יצחק.</li>
+      </ul>
+
+      <h3>13. פרטיות קטינים</h3>
+      <p>השירותים אינם מיועדים לאיסוף מידע מקטינים ללא אישור הורה או אפוטרופוס חוקי. ככל שיימסר מידע על קטין, הדבר ייעשה רק באישור אפוטרופוס חוקי ובהתאם לדין.</p>
+
+      <h3>14. חובת הודעה לרשות להגנת הפרטיות</h3>
+      <p>ככל שהחברה תחזיק או תעבד מאגר מידע החייב בהודעה לרשות להגנת הפרטיות לפי תיקון מס׳ 13 לחוק, תימסר הודעה כאמור בהתאם לדרישות הדין.</p>
+
+      <h3>15. שינויים במדיניות</h3>
+      <p>החברה רשאית לעדכן מדיניות זו מעת לעת. שינויים מהותיים במדיניות יפורסמו באתר או באמצעי אחר לפי שיקול דעת החברה ובהתאם לדין. מועד העדכון האחרון יופיע בראש המדיניות.</p>
+
+      <h3>16. יצירת קשר</h3>
+      <p>לשאלות, בקשות או פניות בנושא פרטיות, ניתן לפנות לאיש הקשר המפורט בסעיף 12 לעיל.</p>
+    </div>
+    <footer class="pp-footer">
+      <p class="pp-disclaimer">בשימושך באתר ובשירותים של מרכולית, אתה מסכים למדיניות הפרטיות.</p>
+      <button class="pp-close-btn" onclick="MarkPrivacyModal.close()">סגור</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  function open(){
+    $('privacy-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>{ const b=document.querySelector('.pp-body'); if(b) b.focus(); }, 50);
+  }
+  function close(){
+    $('privacy-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape' && $('privacy-modal').getAttribute('data-open')==='true') close();
+  });
+  // Wire up all privacy triggers — match by href, aria-label, or visible text
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#privacy' || aria.includes('מדיניות פרטיות') || txt.includes('מדיניות פרטיות')){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true);
+  window.MarkPrivacyModal = { open, close };
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ABOUT US MODAL — opens on any "אודותינו" link
+     Single-section design with countryside illustration banner
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .ab-modal { display:none !important; position:fixed; inset:0; z-index:9999; font-family:'Rubik','Heebo','Arial',sans-serif; }
+  .ab-modal[data-open="true"] { display:block !important; }
+  .ab-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px); }
+  .ab-box {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 720px); max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+  }
+  .ab-close-x {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    z-index:2;
+  }
+  .ab-close-x:hover { background:#f0e7d0; }
+  .ab-illustration {
+    width:100%; height:140px; display:block;
+    object-fit:cover; object-position:50% 65%;
+    background:#FBF8EE;
+    flex-shrink:0;
+  }
+  .ab-body {
+    flex:1; overflow-y:auto; padding:18px 26px 4px; min-height:0;
+  }
+  .ab-title {
+    margin:0 0 12px; color:#1A6147; font-size:1.5rem; font-weight:700;
+    text-align:center; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .ab-title-icon {
+    width:24px; height:24px; flex-shrink:0;
+    fill:none; stroke:#1A6147; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .ab-content {
+    background:#F0EBD8; border:1px solid rgba(26,97,71,.12); border-radius:14px;
+    padding:18px 22px; color:#2c2c2c; font-size:0.92rem; line-height:1.75; font-weight:400;
+  }
+  .ab-content p { margin:0 0 10px; }
+  .ab-content p:last-child { margin-bottom:0; }
+  .ab-content strong { color:#1A6147; font-weight:600; }
+  div.ab-footer, .ab-footer {
+    padding:14px 22px 18px; flex-shrink:0;
+    display:flex; flex-direction:column; gap:8px; align-items:center;
+    background:transparent;
+  }
+  .ab-close-btn {
+    background:#1A6147; color:#fff; border:0; padding:10px 44px; border-radius:10px;
+    font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer;
+    transition:background .15s; min-width:150px;
+  }
+  .ab-close-btn:hover { background:#0F4E37; }
+
+  @media (max-width: 720px) {
+    .ab-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .ab-title { font-size:1.2rem; }
+    .ab-body { padding:14px 16px 4px; }
+    .ab-content { padding:14px 16px; font-size:0.86rem; line-height:1.7; }
+    .ab-footer { padding:12px 16px 14px; }
+    .ab-close-btn { padding:9px 36px; font-size:0.9rem; min-width:130px; }
+    .ab-close-x { top:10px; left:10px; width:30px; height:30px; font-size:20px; }
+  }
+</style>
+
+<div class="ab-modal" id="about-modal" role="dialog" aria-modal="true" aria-labelledby="ab-title">
+  <div class="ab-backdrop" onclick="MarkAboutModal.close()"></div>
+  <div class="ab-box">
+    <button class="ab-close-x" onclick="MarkAboutModal.close()" aria-label="סגור">×</button>
+    <img class="ab-illustration" src="assets/images/countryside_transparent.png" alt="" decoding="async" aria-hidden="true" />
+    <div class="ab-body">
+      <h2 class="ab-title" id="ab-title">
+        <svg class="ab-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>
+        </svg>
+        אודותינו
+      </h2>
+      <div class="ab-content">
+        <p><strong>סופר תלם אגודה שיתופית חקלאית בע״מ</strong> (הידועה כ"מרכולית") היא רשת סופרמרקטים המפעילה סניפים באזור זכרון יעקב, גבעת עדה, בית יצחק, תל יצחק ובצרה.</p>
+        <p>הרשת משלבת חוויית קנייה מודרנית עם דגש על טריות, שירות ואיכות. הרשת מוכרת בזכות הקצביות, המאפיות ומחלקות הירקות שלה.</p>
+        <p>הרשת בולטת בעיקר בשל החוויה האישית מאוד עם הלקוחות, שכן היא ממוקמת באזורים שבהם הקהילתיות נטמעת גם באופן היחס והשירות.</p>
+        <p>הרשת נקראה לזמן קצר גם בשם "סופר תלם" כחלק משותפות קצרה, וחזרה למקורותיה כמו גם לשמה המקורי והאהוב — <strong>"מרכולית"</strong>. יחד עם שמה חזרה גם מסורת ארוכת השנים של שירות אישי בלתי מתפשר, איכות גבוהה של חומרי הגלם, והחזון שהסופר הוא חלק מאינטימיות הקהילה המקומית.</p>
+      </div>
+    </div>
+    <div class="ab-footer">
+      <button class="ab-close-btn" onclick="MarkAboutModal.close()">סגור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  function open(){
+    $('about-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+  }
+  function close(){
+    $('about-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape' && $('about-modal').getAttribute('data-open')==='true') close();
+  });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#about' || aria==='אודותינו' || txt==='אודותינו'){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true);
+  window.MarkAboutModal = { open, close };
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     JOBS MODAL — opens on any "דרושים" link
+     Two containers: image (top) + text + CTA button (bottom)
+══════════════════════════════════════════════════════════════════ -->
+<style>
+  .jb-modal { display:none !important; position:fixed; inset:0; z-index:9999; font-family:'Rubik','Heebo','Arial',sans-serif; }
+  .jb-modal[data-open="true"] { display:block !important; }
+  .jb-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px); }
+  .jb-box {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw, 720px); max-height:90vh; background:#FBF8EE;
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; overflow:hidden; direction:rtl;
+  }
+  .jb-header {
+    padding:20px 22px 12px; position:relative; text-align:center;
+    border-bottom:1px solid rgba(26,97,71,.12); flex-shrink:0;
+  }
+  .jb-close-x {
+    position:absolute; top:14px; left:14px; width:34px; height:34px;
+    border-radius:50%; border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-size:22px; color:#1A6147; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .jb-close-x:hover { background:#f0e7d0; }
+  .jb-title {
+    margin:0; color:#1A6147; font-size:1.5rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .jb-title-icon {
+    width:24px; height:24px; flex-shrink:0;
+    fill:none; stroke:#1A6147; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .jb-body {
+    flex:1; overflow-y:auto; padding:14px 22px 4px; min-height:0;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .jb-image-wrap {
+    background:#F0EBD8; border:1px solid rgba(26,97,71,.12); border-radius:14px;
+    overflow:hidden; flex-shrink:0;
+  }
+  .jb-image-wrap img {
+    width:100%; height:220px; object-fit:cover; object-position:center 15%; display:block;
+  }
+  .jb-content {
+    background:#F8F0E5; border:1px solid rgba(26,97,71,.12); border-radius:14px;
+    padding:18px 22px; color:#2c2c2c; font-size:0.92rem; line-height:1.75; font-weight:400;
+  }
+  .jb-content p { margin:0 0 10px; }
+  .jb-content p:last-child { margin-bottom:0; }
+  .jb-content strong { color:#1A6147; font-weight:600; }
+  .jb-content em { font-style:normal; color:#1A6147; font-weight:600; }
+  div.jb-footer, .jb-footer {
+    padding:14px 22px 18px; flex-shrink:0;
+    display:flex; flex-direction:column; gap:10px; align-items:center;
+    background:transparent; border-top:1px solid rgba(26,97,71,.12);
+  }
+  .jb-cta-btn {
+    background:#1A6147; color:#fff; border:0; padding:12px 36px; border-radius:10px;
+    font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer;
+    transition:background .15s; text-decoration:none; display:inline-block;
+    min-width:200px; text-align:center;
+  }
+  .jb-cta-btn:hover { background:#0F4E37; }
+  .jb-close-link {
+    background:none; border:0; color:#666; font-family:inherit; font-size:0.85rem;
+    cursor:pointer; text-decoration:underline; padding:4px 8px;
+  }
+  .jb-close-link:hover { color:#1A6147; }
+
+  @media (max-width: 720px) {
+    .jb-box { width:96vw; max-height:94vh; border-radius:14px; }
+    .jb-title { font-size:1.2rem; }
+    .jb-body { padding:12px 14px 4px; gap:10px; }
+    .jb-image-wrap img { height:170px; }
+    .jb-content { padding:14px 16px; font-size:0.86rem; line-height:1.7; }
+    .jb-footer { padding:12px 16px 14px; }
+    .jb-cta-btn { padding:11px 28px; font-size:0.92rem; min-width:180px; }
+    .jb-close-x { top:10px; left:10px; width:30px; height:30px; font-size:20px; }
+  }
+</style>
+
+<div class="jb-modal" id="jobs-modal" role="dialog" aria-modal="true" aria-labelledby="jb-title">
+  <div class="jb-backdrop" onclick="MarkJobsModal.close()"></div>
+  <div class="jb-box">
+    <header class="jb-header">
+      <button class="jb-close-x" onclick="MarkJobsModal.close()" aria-label="סגור">×</button>
+      <h2 class="jb-title" id="jb-title">
+        <svg class="jb-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="7" width="16" height="13" rx="2"/>
+          <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 12h16"/>
+        </svg>
+        בואו לעבוד איתנו
+      </h2>
+    </header>
+    <div class="jb-body">
+      <div class="jb-image-wrap">
+        <img src="assets/images/employee.png" alt="צוות מרכולית בסניף" decoding="async" />
+      </div>
+      <div class="jb-content">
+        <p><strong>רשת מרכולית מחפשת אתכם למגוון תפקידים.</strong></p>
+        <p>העבודה במטה ובסניפים היא באווירה נעימה ומשפחתית. אנחנו יודעים להעריך כל סוג של משרה ודבקים במשפט <em>"כל עבודה מכבדת את בעליה"</em>.</p>
+        <p>השכר אצלנו יותר מהוגן ואפשרויות הקידום פתוחות בפני המתאימים.</p>
+        <p>אז… אם אתם בעניין — הגישו מועמדות לסניף ולמשרה המבוקשת.</p>
+      </div>
+    </div>
+    <div class="jb-footer">
+      <a class="jb-cta-btn" href="https://hrapp.yula-digital.com/form/markolit" target="_blank" rel="noopener">להגיש מועמדות עכשיו ←</a>
+      <button class="jb-close-link" onclick="MarkJobsModal.close()">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  function open(){
+    $('jobs-modal').setAttribute('data-open','true');
+    document.body.style.overflow='hidden';
+  }
+  function close(){
+    $('jobs-modal').setAttribute('data-open','false');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape' && $('jobs-modal').getAttribute('data-open')==='true') close();
+  });
+  document.addEventListener('click', e => {
+    // Skip if click is inside any open modal (don't intercept CTA inside modal)
+    if(e.target.closest('.jb-modal[data-open="true"]')) return;
+    const a = e.target.closest('a');
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    const aria = a.getAttribute('aria-label') || '';
+    const txt = (a.textContent || '').trim();
+    if(href==='#jobs' || aria==='דרושים' || aria==='בואו לעבוד אצלנו' || txt==='דרושים' || txt==='בואו לעבוד אצלנו'){
+      e.preventDefault(); e.stopPropagation(); open();
+    }
+  }, true);
+  window.MarkJobsModal = { open, close };
+})();
+</script>
+
+</body>
+</html>
