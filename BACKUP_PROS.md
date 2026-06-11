@@ -108,4 +108,32 @@ git push origin origin/main:plesk-shlishuk-ci --force   # מסנכרן את ה-C
 - ❌ אל תיגע ב-Vercel הישן (`markolit_landing_page`) ולא ב-DNS.
 - ❌ משתמש המערכת `imarkolitl` ב-Plesk משותף עם חברה אחרת — אל תשנה סיסמתו.
 
+---
+
+## 6. סביבת פיתוח (DEV מול PROD) — דף הנחיתה
+
+ריפו אחד, שני ענפים:
+- **`main`** = **פרוד (חי)**. כל push לכאן עולה ל-`markolitly.co.il` תוך ~דקה.
+- **`dev`** = **פיתוח (סנדבוקס)**. דוחפים לכאן כמה שרוצים — **לא מתפרסם** לאתר החי.
+
+**תצוגה מקדימה מקומית:** הרץ (דאבל-קליק) את **`preview.cmd`** בשורש → פתח `http://localhost:8765`. מה שרואים = בדיוק מה שיעלה.
+
+**זרימת עבודה:**
+```bash
+cd /c/markolit_landing_page
+git checkout dev                 # עוברים לסביבת הפיתוח
+# ... עורכים production_deploy/ ...  (preview.cmd לתצוגה)
+git add -A && git commit -m "תיאור" && git push origin dev    # נשמר, לא חי
+
+# כשמרוצים — מעלים לאוויר:
+git checkout main
+git merge dev
+git push origin main             # → מתפרסם חי
+git checkout dev                 # חוזרים לפיתוח
+```
+
+> כלל: עובדים תמיד על `dev`. `main` מתעדכן רק במיזוג מכוון = שום הפתעות חיות.
+
+---
+
 📄 פירוט מלא של ארכיטקטורת הפריסה: `COWORK_DEPLOY_INSTRUCTIONS.md`.
