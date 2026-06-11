@@ -1,0 +1,47 @@
+name: Sync production_deploy → plesk-deploy branch
+
+# מסנכרן את תוכן production_deploy/ לתוך ענף ייעודי `plesk-deploy`
+# שהשורש שלו = קבצי האתר בדיוק. Plesk Git עוקב אחרי הענף הזה ומפרסם
+# את השורש שלו ל-httpdocs של markolitly.co.il. אין FTP, אין סיסמה משותפת.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'production_deploy/**'
+      - '.github/workflows/sync-plesk-deploy-branch.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: plesk-deploy-branch
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # נדרש כדי לדחוף את ענף plesk-deploy
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: בניית ענף plesk-deploy מתוך production_deploy/ ודחיפה
+        run: |
+          set -euo pipefail
+          SRC="production_deploy"
+          if [ ! -f "$SRC/index.html" ]; then
+            echo "::error::$SRC/index.html חסר — לא דוחפים ענף ריק"; exit 1
+          fi
+          WORK="$(mktemp -d)"
+          cp -a "$SRC/." "$WORK/"
+          cd "$WORK"
+          git init -q -b plesk-deploy
+          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git add -A
+          git commit -q -m "Deploy from ${GITHUB_SHA} ($(echo "$GITHUB_SHA" | cut -c1-7))"
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" plesk-deploy
+          echo "✅ נדחף ענף plesk-deploy (שורש = תוכן production_deploy/)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
