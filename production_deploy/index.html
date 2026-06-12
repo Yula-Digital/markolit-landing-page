@@ -64,15 +64,11 @@
       --deals-figure-scale: 0.85;
       width: var(--stage);
       background: #f7f3ea;
-      border: 1px solid var(--border);
-      border-radius: 8px;
       overflow: hidden;
     }
     @media (min-width: 721px) {
       .svg-stage {
-        --stage: min(calc(100vw - 40px), 1080px);
-        box-shadow: 0 4px 28px rgba(0,0,0,0.11);
-        border-radius: 12px;
+        --stage: min(calc(100vw - 40px), 880px);
       }
     }
 
@@ -129,7 +125,7 @@
     .strip-logo {
       position: absolute;
       top: 50%;
-      right: 0%;
+      right: -4.5%;
       transform: translateY(-50%);
       width: 29.5%;
       height: auto;
@@ -140,6 +136,37 @@
       user-select: none;
       z-index: 2;
     }
+    /* Special-offer badge — large clickable icon on the LEFT, mirrors the logo on the right */
+    .special-offer-badge {
+      position: absolute;
+      top: 49%;
+      left: 11%;
+      transform: translateY(-50%);
+      height: 65%;             /* tuned */
+      aspect-ratio: 1 / 1;
+      background: transparent;  /* keep PNG transparent — no box */
+      border: 0;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      line-height: 0;
+      z-index: 3;
+    }
+    .special-offer-badge img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: transparent;
+      pointer-events: none;
+      user-select: none;
+    }
+    .special-offer-badge:focus-visible { outline: 3px solid rgba(0,111,85,.45); outline-offset: 3px; border-radius: 50%; }
+    /* Menu items shift (tuned) */
+    .main-menu-svg { transform: translate(92px, 0); }
+    /* Seamless (frame removed): drop section-card tint + benefit divider lines */
+    .section-card { background: transparent !important; box-shadow: none !important; }
+    .benefits-seps { display: none !important; }
     /* Allow logo + nav to overflow slice without clipping */
     .slice-top-bar { overflow: visible !important; }
     .svg-slice[data-y="0"] { overflow: visible !important; }
@@ -1347,9 +1374,10 @@
       }
     }
 
-    /* Hero shifts (transform) */
-    .hero-headline-wrap { transform: translate(0, 0) !important; }
+    /* Hero shifts (transform) — tuned */
+    .hero-headline-wrap { transform: translate(33px, 0) scale(0.92) !important; }
     .hero-tagline-wrap  { transform: translate(2px, 0) !important; }
+    .hero-main-photo    { transform: translate(31px, -49px) scale(1.24) !important; }
 
     /* hero-mobile-tuner export — 2026-05-10 */
     @media (max-width: 599px) {
@@ -1382,7 +1410,7 @@
     <!-- Top + hero + benefits -->
     <section class="svg-slice" data-y="0" style="--y: 0; --h: 585;" aria-label="פתיח ויתרונות">
       <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
-      <img class="benefits-strip-svg" src="assets/markolit-icones-strip.svg" alt="" decoding="async" aria-hidden="true" />
+      <img class="benefits-strip-svg" src="assets/markolit-icones-strip.svg?v=2" alt="" decoding="async" aria-hidden="true" />
       <div class="benefits-seps" aria-hidden="true"></div>
 
       <div class="slice-top-bar" role="navigation" aria-label="ניווט עליון">
@@ -1455,6 +1483,9 @@
           </a>
         </svg>
         <img class="strip-logo" src="assets/images/trans_logo_marcolit.png" alt="מרכולית" />
+        <button class="special-offer-badge" type="button" aria-label="מבצעים מיוחדים — בחירת דף" onclick="MarkDealsModal.open()">
+          <img src="assets/images/special-offer.png" alt="מבצעים מיוחדים" decoding="async" />
+        </button>
       </div>
 
       <div class="hero-headline-wrap">
