@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal):not(.jb-modal):not(#mark-tuner) {
+    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal):not(.jb-modal):not(.sp-modal):not(#mark-tuner) {
       display: none !important;
     }
     /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
@@ -2841,6 +2841,120 @@
     }
   }, true);
   window.MarkJobsModal = { open, close };
+})();
+</script>
+
+<!-- ═══ SPECIAL OFFERS — CHOICE MODAL (3 options → live preview → enlarge → back) ═══ -->
+<style>
+  .sp-modal{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;font-family:'Heebo',sans-serif;direction:rtl}
+  .sp-modal.sp-open{display:flex}
+  .sp-scrim{position:absolute;inset:0;background:rgba(8,30,28,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .35s ease}
+  .sp-modal.sp-in .sp-scrim{opacity:1}
+  .sp-panel{position:relative;width:min(1060px,94vw);aspect-ratio:1200/720;max-height:92vh;background:#f6f1e7;border:3px solid #00504e;border-radius:26px;box-shadow:0 24px 70px rgba(0,40,36,.45);padding:clamp(14px,2.4vw,30px);display:flex;flex-direction:column;transform:translateY(16px) scale(.96);opacity:0;transition:transform .42s cubic-bezier(.2,.8,.2,1),opacity .4s ease;overflow:hidden}
+  .sp-modal.sp-in .sp-panel{transform:none;opacity:1}
+  .sp-x{position:absolute;top:14px;inset-inline-start:16px;width:38px;height:38px;border-radius:50%;border:2px solid #00504e;background:#fff;color:#00504e;font-size:22px;line-height:1;cursor:pointer;z-index:6}
+  .sp-title{margin:2px 0 clamp(8px,1.6vw,18px);text-align:center;color:#00504e;font-weight:800;font-size:clamp(1.05rem,2.8vw,2rem)}
+  .sp-body{flex:1;display:flex;flex-direction:row-reverse;gap:clamp(10px,1.8vw,22px);min-height:0}
+  .sp-preview{flex:1.35;position:relative;background:#fbf8f1;border:2px solid #d8cfbb;border-radius:18px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .sp-preview-empty{color:#9a9482;font-size:clamp(.78rem,1.6vw,1rem);padding:20px;text-align:center}
+  .sp-frame{position:absolute;top:0;left:0;width:1280px;height:1700px;border:0;transform-origin:top left;background:#fff;pointer-events:none}
+  .sp-catch{position:absolute;inset:0;z-index:2;display:none;cursor:zoom-in}
+  .sp-preview.sp-has .sp-catch{display:block}
+  .sp-hint{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:3}
+  .sp-preview.sp-has .sp-hint{display:flex}
+  .sp-hint span{font-family:'Rubik',sans-serif;font-weight:700;color:#fff;background:rgba(0,80,78,.85);padding:.5em 1.2em;border-radius:999px;font-size:clamp(.85rem,1.8vw,1.25rem);transform:rotate(-18deg);box-shadow:0 6px 18px rgba(0,40,36,.4);animation:spHint 2.4s ease-in-out infinite}
+  @keyframes spHint{0%,100%{transform:rotate(-18deg) translateY(0);opacity:.92}50%{transform:rotate(-18deg) translateY(-7px);opacity:1}}
+  .sp-choices{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(8px,1.4vw,16px);min-width:0}
+  .sp-choice{position:relative;text-align:right;background:#fff;border:2px solid #e3dbc8;border-radius:16px;padding:clamp(10px,1.5vw,18px) clamp(14px,1.8vw,22px);cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .2s;font-family:inherit}
+  .sp-choice:hover{transform:translateX(-4px);box-shadow:0 8px 22px rgba(0,80,78,.14)}
+  .sp-choice.sp-active{border-color:#00504e;box-shadow:0 8px 24px rgba(0,80,78,.2)}
+  .sp-choice-title{display:block;color:#00504e;font-weight:800;font-size:clamp(.92rem,1.9vw,1.4rem)}
+  .sp-choice-sub{display:block;color:#5e6b5f;font-size:clamp(.68rem,1.3vw,.95rem);margin-top:.2em}
+  .sp-choice-arrow{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%) scale(0);width:30px;height:30px;border-radius:50%;background:#00504e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .25s cubic-bezier(.2,1.4,.4,1)}
+  .sp-choice.sp-active .sp-choice-arrow{transform:translateY(-50%) scale(1)}
+  .sp-stage{position:fixed;inset:0;z-index:99995;display:none;background:rgba(8,28,26,.78);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .sp-stage.sp-stage-on{display:block}
+  .sp-stage-frame{position:absolute;inset:clamp(10px,3vw,40px);border:0;width:auto;height:auto;border-radius:14px;background:#fff;box-shadow:0 30px 80px rgba(0,0,0,.5);opacity:0;transform:scale(.93);transition:opacity .4s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .sp-stage.sp-stage-in .sp-stage-frame{opacity:1;transform:none}
+  .sp-back{position:absolute;top:clamp(12px,2vw,22px);inset-inline-end:clamp(12px,2vw,22px);z-index:3;background:#00504e;color:#fff;border:0;border-radius:999px;padding:.55em 1.3em;font-family:'Rubik',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;transition:opacity .35s ease .1s}
+  .sp-stage.sp-stage-in .sp-back{opacity:1}
+  @media(max-width:680px){ .sp-panel{aspect-ratio:auto;height:90vh} .sp-body{flex-direction:column} .sp-choices{flex:none} }
+  @media(prefers-reduced-motion:reduce){ .sp-hint span{animation:none} .sp-panel,.sp-scrim,.sp-stage-frame{transition-duration:.01ms} }
+</style>
+<div class="sp-modal" id="sp-modal" aria-hidden="true">
+  <div class="sp-scrim" data-sp-close></div>
+  <div class="sp-panel" role="dialog" aria-modal="true" aria-labelledby="sp-title">
+    <button class="sp-x" data-sp-close type="button" aria-label="סגור">×</button>
+    <h2 class="sp-title" id="sp-title">מבצעים והנחות מיוחדות</h2>
+    <div class="sp-body">
+      <div class="sp-preview" id="sp-preview">
+        <div class="sp-preview-empty">בחרו אפשרות מימין כדי לראות תצוגה מקדימה של הדף</div>
+        <div class="sp-catch" data-sp-enlarge aria-hidden="true"></div>
+        <div class="sp-hint"><span>לחץ להגדלה</span></div>
+      </div>
+      <div class="sp-choices">
+        <button class="sp-choice" type="button" data-url="https://shlishuk.markolitly.co.il/">
+          <span class="sp-choice-arrow">‹</span>
+          <span class="sp-choice-title">שלישוק שבועי</span>
+          <span class="sp-choice-sub">בסניפים: תל יצחק, בצרה, בית יצחק</span>
+        </button>
+        <button class="sp-choice" type="button" data-url="https://shlishuk.markolitly.co.il/zg">
+          <span class="sp-choice-arrow">‹</span>
+          <span class="sp-choice-title">שלישוק שבועי</span>
+          <span class="sp-choice-sub">בסניפים: זכרון יעקב וגבעת עדה</span>
+        </button>
+        <button class="sp-choice" type="button" data-url="https://shlishuk.markolitly.co.il/mivtzaim">
+          <span class="sp-choice-arrow">‹</span>
+          <span class="sp-choice-title">מבצעים לכל החודש</span>
+          <span class="sp-choice-sub">בכל הסניפים ובכל החודש</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="sp-stage" id="sp-stage"><button class="sp-back" type="button">חזרה לבחירה ›</button></div>
+</div>
+<script>
+(function(){
+  var modal=document.getElementById('sp-modal'), preview=document.getElementById('sp-preview'),
+      stage=document.getElementById('sp-stage'), curUrl=null, frame=null;
+  function open(){ modal.classList.add('sp-open'); requestAnimationFrame(function(){modal.classList.add('sp-in');}); document.body.style.overflow='hidden'; }
+  function close(){ collapse(); modal.classList.remove('sp-in'); setTimeout(function(){modal.classList.remove('sp-open');},400); document.body.style.overflow=''; }
+  function fitFrame(){ if(!frame)return; var r=preview.getBoundingClientRect(); frame.style.transform='scale('+(r.width/1280)+')'; }
+  function select(url, btn){
+    curUrl=url;
+    [].forEach.call(modal.querySelectorAll('.sp-choice'), function(b){ b.classList.toggle('sp-active', b===btn); });
+    var empty=preview.querySelector('.sp-preview-empty'); if(empty) empty.style.display='none';
+    if(!frame){ frame=document.createElement('iframe'); frame.className='sp-frame'; frame.setAttribute('scrolling','no'); frame.setAttribute('tabindex','-1'); frame.setAttribute('aria-hidden','true'); preview.insertBefore(frame, preview.firstChild); }
+    if(frame.src!==url){ frame.src=url; }
+    preview.classList.add('sp-has'); fitFrame();
+  }
+  function enlarge(){
+    if(!curUrl) return;
+    var sf=stage.querySelector('.sp-stage-frame');
+    if(!sf){ sf=document.createElement('iframe'); sf.className='sp-stage-frame'; sf.setAttribute('title','תצוגת הדף'); stage.insertBefore(sf, stage.firstChild); }
+    if(sf.src!==curUrl) sf.src=curUrl;
+    stage.classList.add('sp-stage-on'); requestAnimationFrame(function(){ stage.classList.add('sp-stage-in'); });
+  }
+  function collapse(){ stage.classList.remove('sp-stage-in'); setTimeout(function(){ stage.classList.remove('sp-stage-on'); },440); }
+  modal.addEventListener('click', function(e){
+    if(e.target.closest('[data-sp-close]')){ close(); return; }
+    var c=e.target.closest('.sp-choice'); if(c){ select(c.getAttribute('data-url'), c); return; }
+    if(e.target.closest('[data-sp-enlarge]')){ enlarge(); return; }
+  });
+  stage.addEventListener('click', function(e){ if(e.target.closest('.sp-back') || e.target===stage){ collapse(); } });
+  document.addEventListener('keydown', function(e){ if(e.key!=='Escape')return; if(stage.classList.contains('sp-stage-on')) collapse(); else if(modal.classList.contains('sp-open')) close(); });
+  window.addEventListener('resize', fitFrame);
+  var api={ open:open, close:close, select:select };
+  window.MarkSpecialModal=api; window.MarkDealsModal=api; /* alias: the SPECIAL OFFER nav icon uses MarkDealsModal.open() */
+  /* also open from the deals-section "שלישוק במרכולית" button / figure / hit */
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('#deals')) return;
+    if(e.target.closest('.section-card-btn,.section-card-figure,.hit')){ e.preventDefault(); e.stopPropagation(); open(); }
+  }, true);
+  /* dev-only visual preview: localhost + #sp-demo opens the modal on load (harmless in production) */
+  if((location.hostname==='localhost'||location.hostname==='127.0.0.1') && location.hash.indexOf('sp-demo')>=0){
+    setTimeout(function(){ open(); var b=modal.querySelector('.sp-choice'); select(b.getAttribute('data-url'), b); }, 200);
+  }
 })();
 </script>
 
