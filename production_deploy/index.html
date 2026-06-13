@@ -2872,8 +2872,9 @@
     TARGETS.forEach(function(t){
       var el=section.querySelector(t.sel); if(!el)return;
       var v=state[sec][t.key];
-      el.style.transform=t.base+'translate('+v.tx+'px,'+v.ty+'px) scale('+v.s+')';
-      if(t.width) el.style.width=v.w+'%';
+      /* use !important so the slider beats the baked !important rule (inline-important wins over stylesheet-important) */
+      el.style.setProperty('transform', t.base+'translate('+v.tx+'px,'+v.ty+'px) scale('+v.s+')', 'important');
+      if(t.width) el.style.setProperty('width', v.w+'%', 'important');
     });
   }
   function applyAll(){SECTIONS.forEach(applySec);localStorage.setItem(LSK,JSON.stringify(state));}
@@ -2885,7 +2886,9 @@
       TARGETS.forEach(function(t){
         var v=state[sec][t.key];
         var tf=t.base+'translate('+v.tx+'px,'+v.ty+'px) scale('+v.s+')';
-        var rule='#'+sec+' '+t.sel+'{transform:'+tf+(t.width?';width:'+v.w+'%':'')+'}';
+        /* figure needs !important to beat the later desktop rule; keep parity dev<->prod */
+        var imp=(t.key==='figure')?' !important':'';
+        var rule='#'+sec+' '+t.sel+'{transform:'+tf+imp+(t.width?';width:'+v.w+'%':'')+'}';
         out+=rule+'\n';
       });
     });
