@@ -1137,6 +1137,22 @@
         display: none;
       }
 
+      /* The "hand-drawn illustrations + tuner" addition (commit badcdcc) is WEB-ONLY.
+         On mobile it must not exist: remove the illustrations AND neutralize that addition's
+         desktop section-tuning that leaks here — the figure is already reset; the three CTA
+         buttons + title/sub carry desktop transforms (e.g. translate(-554px)) and are reset
+         to normal mobile flow. Web layout untouched. */
+      #deals .section-sketch,
+      #fresh .section-sketch,
+      #jobs .section-sketch {
+        display: none !important;
+      }
+      #deals .section-card-btn,   #fresh .section-card-btn,   #jobs .section-card-btn,
+      #deals .section-card-title, #fresh .section-card-title, #jobs .section-card-title,
+      #deals .section-card-sub,   #fresh .section-card-sub,    #jobs .section-card-sub {
+        transform: none !important;
+      }
+
       /* 3. Card: יוצא מ-absolute → זורם רגיל */
       #deals .section-card,
       #fresh .section-card,
