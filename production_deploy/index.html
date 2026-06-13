@@ -174,8 +174,8 @@
     /* Seamless (frame removed): drop section-card tint + benefit divider lines */
     .section-card { background: transparent !important; box-shadow: none !important; }
     /* benefits-seps now VISIBLE — provides the 3 uniform vertical separators (see main rule) */
-    /* Cover baked frame/divider remnants behind the (transparent) trust-badge strip */
-    .benefits-strip-svg { background: #f7f3ea !important; }
+    /* Match base-art's actual cream (243,239,234) so the strip rectangle is invisible (no lighter band/edge) */
+    .benefits-strip-svg { background: #f3efea !important; }
     /* Benefits row group shift (tuned) — all 3 layers together */
     .benefits-strip-svg, .club-cover, .club-icon-replace { transform: translate(5px, 0) !important; }
     /* Allow logo + nav to overflow slice without clipping */
@@ -310,7 +310,7 @@
       width: 100%;
       top: 62%;
       height: calc(420 / 585 * 100% - 62%);
-      background-color: #f7f3ea;
+      background-color: #f3efea;
       background-image: url('assets/images/countryside_clean.png');
       background-position: center center;
       background-repeat: no-repeat;
@@ -364,8 +364,8 @@
     .club-cover {
       position: absolute;
       z-index: 5;
-      /* match the trust-strip background (#f7f3ea) so no yellowish patch shows under badge 3 */
-      background: #f7f3ea;
+      /* match base-art cream (243,239,234) so no patch/edge shows under badge 3 */
+      background: #f3efea;
       pointer-events: none;
     }
     /* Combined badge + label (single transparent SVG) on top of cream cover */
