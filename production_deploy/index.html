@@ -321,7 +321,8 @@
     /* Allow the deals/fresh/jobs button (and sketch) to be positioned past the section edge and stay
        visible: un-clip these slices, but clip each base-art back to its own window via clip-path so it
        doesn't bleed over neighbours (vertical % keeps it responsive; 6px sides hide the baked frame). */
-    #deals, #fresh, #jobs { overflow: visible !important; }
+    #deals, #fresh, #jobs,
+    #deals .section-card, #fresh .section-card, #jobs .section-card { overflow: visible !important; }
     #deals .base-art { clip-path: inset(70.4% 6px 13.6% 6px); }
     #fresh .base-art { clip-path: inset(50.1% 6px 33.9% 6px); }
     #jobs  .base-art { clip-path: inset(82.1% 6px 1.3% 6px); }
