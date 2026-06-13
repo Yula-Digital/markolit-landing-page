@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal):not(.jb-modal) {
+    body > :not(.exact-svg-page):not(.navbar):not(.nav-mobile):not(.nav-overlay):not(.br-modal):not(.pp-modal):not(.ab-modal):not(.jb-modal):not(#mark-tuner) {
       display: none !important;
     }
     /* Desktop: SVG nav strip handles navigation. CSS navbar hidden on desktop, shown on mobile. */
@@ -2864,6 +2864,7 @@
 
   // ---- build panel ----
   var p=document.createElement('div');
+  p.id='mark-tuner';
   p.dir='rtl';
   p.style.cssText='position:fixed;bottom:8px;inset-inline-start:8px;z-index:2147483647;background:#fff;border:2px solid #1d6b5f;border-radius:10px;font:12px/1.4 Heebo,sans-serif;color:#163;box-shadow:0 6px 24px rgba(0,0,0,.3);width:300px;max-height:88vh;overflow:auto;padding:8px;';
   function h(html){var d=document.createElement('div');d.innerHTML=html;return d.firstElementChild;}
