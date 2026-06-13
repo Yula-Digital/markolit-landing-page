@@ -303,6 +303,21 @@
       z-index: 1;
     }
 
+    /* New per-section hand-drawn illustration, placed between the copy and the figure.
+       Position/size are tuned live via the dev slider panel (?tune) and baked into these vars. */
+    .section-sketch {
+      position: absolute;
+      z-index: 2;                 /* above base-art (1), below the card copy/figure */
+      left: 50%;
+      top: 50%;
+      width: var(--sw, 30%);
+      transform: translate(-50%, -50%) translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--ts, 1));
+      pointer-events: none;
+      /* the sketches are dark line-art on a white background; multiply drops the white into the
+         cream section so only the line-work shows (no white rectangle) */
+      mix-blend-mode: multiply;
+    }
+
     .landscape-cover {
       position: absolute;
       z-index: 2;
@@ -1544,6 +1559,7 @@
     <!-- Swapped order: deals first -->
     <section class="svg-slice" id="deals" data-y="772" style="--y: 772; --h: 187;" aria-label="מבצעים מתחדשים">
       <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <img class="section-sketch" data-sec="deals" src="assets/images/מבצעים מתחדשים.png" alt="" aria-hidden="true" decoding="async" loading="lazy" />
       <div class="section-card section-card--split">
         <div class="section-card-copy">
           <p class="section-card-title">מבצעים מתחדשים</p>
@@ -1566,6 +1582,7 @@
 
     <section class="svg-slice" id="fresh" data-y="585" style="--y: 585; --h: 187;" aria-label="מוצרים טריים">
       <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <img class="section-sketch" data-sec="fresh" src="assets/images/מוצרים טריים.png" alt="" aria-hidden="true" decoding="async" loading="lazy" />
       <div class="section-card section-card--split">
         <div class="section-card-copy">
           <p class="section-card-title">מוצרים טריים</p>
@@ -1588,6 +1605,7 @@
 
     <section class="svg-slice" id="jobs" data-y="959" style="--y: 959; --h: 193;" aria-label="דרושים">
       <img class="base-art" src="assets/markolit-composed.png?v=23" alt="" />
+      <img class="section-sketch" data-sec="jobs" src="assets/images/דרושים.png" alt="" aria-hidden="true" decoding="async" loading="lazy" />
       <div class="section-card section-card--split">
         <div class="section-card-copy">
           <p class="section-card-title">דרושים</p>
@@ -2796,6 +2814,98 @@
     }
   }, true);
   window.MarkJobsModal = { open, close };
+})();
+</script>
+
+<!-- ═══ DEV TUNER (runs ONLY on localhost with ?tune in the URL — never in production) ═══ -->
+<script>
+(function(){
+  var isLocal = location.hostname==='localhost' || location.hostname==='127.0.0.1';
+  if(!isLocal || !/[?&]tune/.test(location.search)) return;
+
+  var SECTIONS=['deals','fresh','jobs'];
+  var SECLBL={deals:'מבצעים מתחדשים',fresh:'מוצרים טריים',jobs:'דרושים'};
+  // tunable targets inside each section. base = fixed prefix kept before the tuned transform.
+  var TARGETS=[
+    {key:'sketch',label:'איור',sel:'.section-sketch',base:'translate(-50%,-50%) ',width:true},
+    {key:'figure',label:'תמונת מוצרים',sel:'.section-card-figure',base:'',width:false},
+    {key:'copy',label:'טקסט (כותרת+משנה)',sel:'.section-card-copy',base:'',width:false},
+    {key:'btn',label:'כפתור',sel:'.section-card-btn',base:'',width:false}
+  ];
+  var LSK='markolit_tuner_v2';
+  var state=JSON.parse(localStorage.getItem(LSK)||'{}');
+  SECTIONS.forEach(function(s){state[s]=state[s]||{};TARGETS.forEach(function(t){
+    state[s][t.key]=state[s][t.key]||{tx:0,ty:0,s:1,w:(t.key==='sketch'?30:0)};});});
+
+  function applySec(sec){
+    var section=document.getElementById(sec); if(!section)return;
+    TARGETS.forEach(function(t){
+      var el=section.querySelector(t.sel); if(!el)return;
+      var v=state[sec][t.key];
+      el.style.transform=t.base+'translate('+v.tx+'px,'+v.ty+'px) scale('+v.s+')';
+      if(t.width) el.style.width=v.w+'%';
+    });
+  }
+  function applyAll(){SECTIONS.forEach(applySec);localStorage.setItem(LSK,JSON.stringify(state));}
+
+  var cur='deals';
+  function bakeCSS(){
+    var out='';
+    SECTIONS.forEach(function(sec){
+      TARGETS.forEach(function(t){
+        var v=state[sec][t.key];
+        var tf=t.base+'translate('+v.tx+'px,'+v.ty+'px) scale('+v.s+')';
+        var rule='#'+sec+' '+t.sel+'{transform:'+tf+(t.width?';width:'+v.w+'%':'')+'}';
+        out+=rule+'\n';
+      });
+    });
+    return out;
+  }
+
+  // ---- build panel ----
+  var p=document.createElement('div');
+  p.dir='rtl';
+  p.style.cssText='position:fixed;bottom:8px;inset-inline-start:8px;z-index:2147483647;background:#fff;border:2px solid #1d6b5f;border-radius:10px;font:12px/1.4 Heebo,sans-serif;color:#163;box-shadow:0 6px 24px rgba(0,0,0,.3);width:300px;max-height:88vh;overflow:auto;padding:8px;';
+  function h(html){var d=document.createElement('div');d.innerHTML=html;return d.firstElementChild;}
+  var tabs='<div style="display:flex;gap:4px;margin-bottom:6px">'+SECTIONS.map(function(s){return '<button data-tab="'+s+'" style="flex:1;padding:5px 2px;border:1px solid #1d6b5f;border-radius:6px;background:#eef;cursor:pointer;font-weight:700;font-size:11px">'+SECLBL[s]+'</button>';}).join('')+'</div>';
+  p.appendChild(h('<div style="font-weight:800;margin-bottom:6px;font-size:13px">🎚️ כיוונון סקשנים</div>'));
+  p.appendChild(h(tabs));
+  var body=document.createElement('div'); p.appendChild(body);
+  var exp=h('<button style="width:100%;margin-top:8px;padding:7px;background:#1d6b5f;color:#fff;border:0;border-radius:7px;cursor:pointer;font-weight:700">📋 Export (העתק)</button>');
+  p.appendChild(exp);
+  var ta=h('<textarea readonly style="width:100%;height:90px;margin-top:6px;font:10px monospace;display:none"></textarea>');
+  p.appendChild(ta);
+
+  function slider(sec,t,prop,min,max,step,unit){
+    var v=state[sec][t.key][prop];
+    var row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:5px;margin:2px 0';
+    var lab={tx:'X',ty:'Y',s:'גודל',w:'רוחב'}[prop];
+    var out=h('<span style="width:42px;text-align:left;font-variant-numeric:tabular-nums">'+v+'</span>');
+    var inp=h('<input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'" style="flex:1">');
+    inp.addEventListener('input',function(){var nv=parseFloat(inp.value);state[sec][t.key][prop]=nv;out.textContent=nv;applyAll();});
+    row.appendChild(h('<span style="width:34px;font-weight:700">'+lab+'</span>'));
+    row.appendChild(inp); row.appendChild(out);
+    return row;
+  }
+  function renderBody(){
+    body.innerHTML='';
+    TARGETS.forEach(function(t){
+      var g=document.createElement('div'); g.style.cssText='border-top:1px solid #cde;padding:5px 0;margin-top:4px';
+      g.appendChild(h('<div style="font-weight:800;color:#1d6b5f;margin-bottom:2px">'+t.label+'</div>'));
+      g.appendChild(slider(cur,t,'tx',-400,400,1));
+      g.appendChild(slider(cur,t,'ty',-300,300,1));
+      g.appendChild(slider(cur,t,'s',0.3,2.6,0.01));
+      if(t.width) g.appendChild(slider(cur,t,'w',5,90,0.5));
+      body.appendChild(g);
+    });
+  }
+  p.querySelectorAll('[data-tab]').forEach(function(b){b.addEventListener('click',function(){cur=b.getAttribute('data-tab');p.querySelectorAll('[data-tab]').forEach(function(x){x.style.background='#eef';});b.style.background='#bfe';renderBody();document.getElementById(cur).scrollIntoView({behavior:'smooth',block:'center'});});});
+  exp.addEventListener('click',function(){ta.style.display='block';ta.value=bakeCSS();ta.select();try{document.execCommand('copy');}catch(e){}exp.textContent='✓ הועתק';setTimeout(function(){exp.textContent='📋 Export (העתק)';},1500);});
+
+  document.body.appendChild(p);
+  p.querySelector('[data-tab="deals"]').style.background='#bfe';
+  renderBody(); applyAll();
+  window.__tuner={state:state,bake:bakeCSS};
 })();
 </script>
 
