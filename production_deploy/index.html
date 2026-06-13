@@ -378,15 +378,16 @@
       z-index: 7;
       left: calc(35 / 648 * 100%);
       width: calc((615 - 35) / 648 * 100%);
-      top: calc(435 / 585 * 100%);
-      height: calc(115 / 585 * 100%);
-      /* THREE IDENTICAL 1px separators at 25/50/75. A faint line is baked into the strip SVG only at
-         gap 1-2 (~24.6%); the last gradient is a cream mask (#f3efea, invisible on the matching bg)
-         that hides it, so all three visible separators are exactly the same 1px grey line. */
+      /* full strip height (420..565) so the cream mask covers the WHOLE baked line (no top/bottom remnants) */
+      top: calc(420 / 585 * 100%);
+      height: calc(145 / 585 * 100%);
+      /* THREE IDENTICAL 1px separators. A faint line is baked into the strip SVG only at gap 1-2 (~24.6%);
+         the last gradient is a full-height cream mask (#f3efea) that hides it end-to-end. The grey-line
+         stops (25%/75%) keep the visible separators the same length as before despite the taller box. */
       background-image:
-        linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent),
-        linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent),
-        linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent),
+        linear-gradient(to bottom, transparent, rgb(164,161,158) 25%, rgb(164,161,158) 75%, transparent),
+        linear-gradient(to bottom, transparent, rgb(164,161,158) 25%, rgb(164,161,158) 75%, transparent),
+        linear-gradient(to bottom, transparent, rgb(164,161,158) 25%, rgb(164,161,158) 75%, transparent),
         linear-gradient(to bottom, #f3efea, #f3efea);
       background-size: 1px 100%, 1px 100%, 1px 100%, 6px 100%;
       background-position: 25% 0, 50% 0, 75% 0, 24.6% 0;
