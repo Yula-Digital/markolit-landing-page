@@ -1,0 +1,38 @@
+# ── מרכולית · דף נחיתה סטטי · markolitly.co.il ──
+# קובץ זה נפרס אוטומטית יחד עם index.html אל httpdocs/
+
+# דף ברירת המחדל
+DirectoryIndex index.html
+
+# ── כפיית HTTPS ──
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# ── Caching ל-assets (תמונות / SVG / פונטים) ──
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/png        "access plus 1 year"
+  ExpiresByType image/jpeg       "access plus 1 year"
+  ExpiresByType image/webp       "access plus 1 year"
+  ExpiresByType image/svg+xml    "access plus 1 year"
+  ExpiresByType text/css         "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+
+# ── index.html תמיד טרי (כדי שעדכונים יופיעו מיד) ──
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ── דחיסת gzip ──
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>
+
+# ── דומיין כפול / Redirect זמני (כבוי כברירת מחדל) ──
+# אם תרצה שהדומיין הישן יפנה לחדש בתקופת המעבר — הסר את ההערה והחלף OLD-DOMAIN:
+# RewriteCond %{HTTP_HOST} ^OLD-DOMAIN\.com$ [NC]
+# RewriteRule ^(.*)$ https://markolitly.co.il/$1 [R=302,L]
