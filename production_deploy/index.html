@@ -127,7 +127,7 @@
       top: 50%;
       right: -4.5%;
       transform: translateY(-50%);
-      width: 29.5%;
+      width: 29.75%;
       height: auto;
       max-height: 220%;
       object-fit: contain;
@@ -140,9 +140,9 @@
     .special-offer-badge {
       position: absolute;
       top: 49%;
-      left: 11%;
+      left: 22.5%;
       transform: translateY(-50%);
-      height: 65%;             /* tuned */
+      height: 64%;             /* tuned */
       aspect-ratio: 1 / 1;
       background: transparent;  /* keep PNG transparent — no box */
       border: 0;
@@ -163,10 +163,21 @@
     }
     .special-offer-badge:focus-visible { outline: 3px solid rgba(0,111,85,.45); outline-offset: 3px; border-radius: 50%; }
     /* Menu items shift (tuned) */
-    .main-menu-svg { transform: translate(92px, 0); }
+    .main-menu-svg { transform: translate(143px, 0); position: relative; z-index: 1; }
+    /* Isolated white header-bar background — own layer, decoupled from menu/logo/icon */
+    .nav-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #FCF9F6; z-index: 0; pointer-events: none; }
+    /* White header bar — tuned size (desktop only, keep mobile responsive) */
+    @media (min-width: 721px) {
+      .slice-top-bar { width: 124%; height: 135px; aspect-ratio: auto; }
+      .nav-bg { width: 101%; height: 132px; left: -1%; top: 0; }   /* isolated white bg — tuned */
+    }
     /* Seamless (frame removed): drop section-card tint + benefit divider lines */
     .section-card { background: transparent !important; box-shadow: none !important; }
     .benefits-seps { display: none !important; }
+    /* Cover baked frame/divider remnants behind the (transparent) trust-badge strip */
+    .benefits-strip-svg { background: #f7f3ea !important; }
+    /* Benefits row group shift (tuned) — all 3 layers together */
+    .benefits-strip-svg, .club-cover, .club-icon-replace { transform: translate(5px, 0) !important; }
     /* Allow logo + nav to overflow slice without clipping */
     .slice-top-bar { overflow: visible !important; }
     .svg-slice[data-y="0"] { overflow: visible !important; }
@@ -1375,8 +1386,8 @@
     }
 
     /* Hero shifts (transform) — tuned */
-    .hero-headline-wrap { transform: translate(33px, 0) scale(0.92) !important; }
-    .hero-tagline-wrap  { transform: translate(2px, 0) !important; }
+    .hero-headline-wrap { transform: translate(-5px, 0) scale(0.92) !important; }
+    .hero-tagline-wrap  { transform: translate(-20px, 0) !important; }
     .hero-main-photo    { transform: translate(31px, -49px) scale(1.24) !important; }
 
     /* hero-mobile-tuner export — 2026-05-10 */
@@ -1414,8 +1425,9 @@
       <div class="benefits-seps" aria-hidden="true"></div>
 
       <div class="slice-top-bar" role="navigation" aria-label="ניווט עליון">
+        <div class="nav-bg" aria-hidden="true"></div>
         <svg class="main-menu-svg" viewBox="0 0 1224 194" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-          <rect x="0" y="0" width="1224" height="194" fill="#FCF9F6"/>
+          <rect x="0" y="0" width="1224" height="194" fill="none"/>
 
           <!-- בית (active) — items via tuner: itemGap=166, groupX=220 -->
           <a href="#home" class="nav-item nav-active">
