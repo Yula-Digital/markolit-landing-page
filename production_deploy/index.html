@@ -173,7 +173,7 @@
     }
     /* Seamless (frame removed): drop section-card tint + benefit divider lines */
     .section-card { background: transparent !important; box-shadow: none !important; }
-    .benefits-seps { display: none !important; }
+    /* benefits-seps now VISIBLE — provides the 3 uniform vertical separators (see main rule) */
     /* Cover baked frame/divider remnants behind the (transparent) trust-badge strip */
     .benefits-strip-svg { background: #f7f3ea !important; }
     /* Benefits row group shift (tuned) — all 3 layers together */
@@ -289,9 +289,12 @@
 
     .base-art {
       position: absolute;
-      inset-inline-start: 0;
+      /* Bleed 6px past each side so the dark baked frame line at the PNG edges is clipped by the
+         slices' overflow:hidden. Physical `left` (not logical) + !important to beat the tuner's inline width. */
+      left: -6px !important;
+      right: auto;
       top: 0;
-      width: 100%;
+      width: calc(100% + 12px) !important;
       max-width: none;
       height: auto;
       transform: translateY(0);
@@ -330,17 +333,20 @@
     }
     .benefits-seps {
       position: absolute;
-      z-index: 5;
+      /* above club-cover (z5) so the lines aren't hidden where the club badge overlaps a gap */
+      z-index: 7;
       left: calc(35 / 648 * 100%);
       width: calc((615 - 35) / 648 * 100%);
       top: calc(435 / 585 * 100%);
       height: calc(115 / 585 * 100%);
+      /* THREE uniform vertical separators at the gaps between the 4 badges (25% / 50% / 75%) */
       background-image:
         linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent),
+        linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent),
         linear-gradient(to bottom, transparent, rgb(164,161,158) 18%, rgb(164,161,158) 82%, transparent);
-      background-size: 1px 100%, 1px 100%;
-      background-position: 50% 0, 75% 0;
-      background-repeat: no-repeat;
+      background-size: 1px 100%, 1px 100%, 1px 100%;
+      background-position: 25% 0, 50% 0, 75% 0;
+      background-repeat: no-repeat, no-repeat, no-repeat;
       pointer-events: none;
     }
 
@@ -358,7 +364,8 @@
     .club-cover {
       position: absolute;
       z-index: 5;
-      background: var(--cream);
+      /* match the trust-strip background (#f7f3ea) so no yellowish patch shows under badge 3 */
+      background: #f7f3ea;
       pointer-events: none;
     }
     /* Combined badge + label (single transparent SVG) on top of cream cover */
